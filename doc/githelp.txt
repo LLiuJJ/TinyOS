@@ -1,0 +1,47 @@
+一、代码合并规范
+
+feature_ 开头的是自己开发的分支
+develop 是测试分支
+master 是发布分支
+
+在自己的 feature_* 分支上开发好 -> 发布到 develop -> 合并到 master
+
+合并操作
+在 https://gitlab.com/vajn/tinyos 页面点 Create merge request 按钮
+之后点 change_branches 选择目标分支为 develop, 比较并合并代码
+
+二、git命令参考
+
+1.克隆代码到本地
+git clone git@gitlab.com:vajn/tinyos.git -b feature_doc(自己的分支名)
+
+2.添加代码到本地仓库(项目目录下)
+git add --all
+
+3.提交到本地
+git commit -m "提交信息"
+
+4.推送到远程
+git push
+
+...
+更多命令参考
+
+https://gist.github.com/luckyli/32f9b92eb13f78614c5e4d340667fe95
+三、gitlab权限
+
+host@LiuJ  ~/Documents  git clone git@gitlab.com:vajn/tinyos.git -b feature
+正克隆到 'tinyos'...
+The authenticity of host 'gitlab.com (35.231.145.151)' can't be established.
+ECDSA key fingerprint is SHA256:HbW3g8zUjNSksFbqTiUWPWg2Bq1x8xdGUrliXFzSnUw.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'gitlab.com,35.231.145.151' (ECDSA) to the list of known hosts.
+git@gitlab.com: Permission denied (publickey).
+fatal: 无法读取远程仓库。
+
+请确认您有正确的访问权限并且仓库存在。
+
+第一次克隆会有权限问题
+https://gitlab.com/help/ssh/README#generating-a-new-ssh-key-pair
+
+按这个页面方法搞一下就可以了
