@@ -10,7 +10,7 @@ void printf(char *str)
 
 extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber)
 {
-	printf("Hello world!\n");
+	printf("Hello world!");
 	
 
 	while(1);
