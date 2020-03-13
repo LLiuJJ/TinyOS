@@ -8,7 +8,7 @@ void printf(char *str)
 }
 
 
-extern "C" void kernelMain(void* mulitboot_trcuture, unsigned int magicnumber)
+extern "C" void kernelMain(void* multiboot_structure, unsigned int magicnumber)
 {
 	printf("Hello world!\n");
 	
