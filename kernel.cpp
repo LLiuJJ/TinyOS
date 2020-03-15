@@ -1,6 +1,6 @@
 #include "types.h"
 
-void printf(char *str)
+void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
 {
 	unsigned short* VideoMemory = (unsigned short*)0xb8000;
 
