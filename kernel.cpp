@@ -1,4 +1,6 @@
 #include "types.h"
+#include "gdt.h"
+
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
 {
@@ -25,7 +27,8 @@ extern "C" void callConstructors()
 extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_magic*/)
 {
 	printf("Hello world!");
-	
+	GlobalDescriptorTable gdt;
+
 
 	while(1);
 }
