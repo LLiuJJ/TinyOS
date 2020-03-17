@@ -1,3 +1,4 @@
+#include "types.h"
 #include "gdt.h"
 
 GlobalDescriptorTable::GlobalDescriptorTable()
@@ -21,12 +22,12 @@ GlobalDescriptorTable::~GlobalDescriptorTable() {
 
 uint16_t GlobalDescriptorTable::DataSegmentSelector() {
     //选择器地址 - 表的地址
-    return (uint8_t)&dataSegmentSelector - (uint8_t*)this;
+    return (uint8_t*)(&dataSegmentSelector) - (uint8_t*)this;
 }
 
 
 uint16_t GlobalDescriptorTable::CodeSegmentSelector() {  //代码段
-    return (uint8_t)&codeSegmentSelector - (uint8_t*)this;
+    return (uint8_t*)(&codeSegmentSelector) - (uint8_t*)this;
 }
 
 GlobalDescriptorTable::SegmentDescriptor::SegmentDescriptor(uint32_t base, uint32_t limit, uint8_t flags) {
