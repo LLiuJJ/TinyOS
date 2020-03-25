@@ -1,6 +1,8 @@
 
 #include "types.h"
+#include "port.h"
 #include "interrupts.h"
+
 
 void printf(char *str);
 
@@ -78,7 +80,7 @@ void InterruptManager::Activate()
 
 uint32_t InterruptManager::handleInterrupt(uint8_t interruptNumber, uint32_t esp)
 {
-    printf(" INTERRUPT");
+//    printf(" INTERRUPT");
 
 
     return esp;
