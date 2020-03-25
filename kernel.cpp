@@ -51,7 +51,6 @@ extern "C" void callConstructors()
 extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_magic*/)
 {
 	printf("Hello world!\n");
-	printf("hello world!\n");
 
 	GlobalDescriptorTable gdt;
 	InterruptManager interrupts(&gdt); //init
@@ -59,5 +58,6 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 
 	interrupts.Activate();  //act
 
+	printf("-----\n");
 	while(1);
 }

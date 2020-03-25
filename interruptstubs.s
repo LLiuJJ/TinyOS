@@ -6,10 +6,11 @@
 #get by  nm interrupts.o
 .extern _ZN16InterruptManager15handleInterruptEhj
 
+
 .global _ZN16InterruptManager22IgnoreInterruptRequestEv
 
 
-.macro HandleInterruptRequest num
+.macro HandleException num
 .global _ZN16InterruptManager16HandleException\num\()Ev
 _ZN16InterruptManager16HandleException\num\()Ev:
     movb $\num, (interruptnumber)

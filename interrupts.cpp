@@ -16,8 +16,8 @@ void InterruptManager::SetInterruptDescriptorTableEntry(
 
     const uint8_t IDT_DESC_PRESENT = 0x80;
 
-    interruptDescriptorTable[interruptNumber].handlerAddressLowBits = ((uint32_t)handler) & oxFFF;
-    interruptDescriptorTable[interruptNumber].handlerAddressHighBits = (((uint32_t)handler) >> 16) & oxFFF;
+    interruptDescriptorTable[interruptNumber].handlerAddressLowBits = ((uint32_t)handler) & 0xFFF;
+    interruptDescriptorTable[interruptNumber].handlerAddressHighBits = (((uint32_t)handler) >> 16) & 0xFFF;
     interruptDescriptorTable[interruptNumber].gdt_codeSegmentSelector = codeSegmentSelectorOffset;
     interruptDescriptorTable[interruptNumber].access = IDT_DESC_PRESENT | DescriptorType | ((DescriptorPrivilegeLevel & 3) << 5);
     interruptDescriptorTable[interruptNumber].reserved = 0;
@@ -65,7 +65,8 @@ InterruptManager::InterruptManager(GlobalDescriptorTable *gdt)
     asm volatile("lidt %0" : : "m" (idt));
 
 }
-InterruptManager::InterruptManager()
+
+InterruptManager::~InterruptManager()
 {
 
 }
