@@ -1,6 +1,6 @@
 #include "types.h"
 #include "gdt.h"
-
+#include "interrupts.h"
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
 {
@@ -52,8 +52,12 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 {
 	printf("Hello world!\n");
 	printf("hello world!\n");
-	GlobalDescriptorTable gdt;
 
+	GlobalDescriptorTable gdt;
+	InterruptManager interrupts(&gdt); //init
+
+
+	interrupts.Activate();  //act
 
 	while(1);
 }
