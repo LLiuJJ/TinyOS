@@ -2,11 +2,12 @@
 #include "gdt.h"
 #include "port.h"
 #include "keyboard.h"
+#include "mouse.h"
 #include "interrupts.h"
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
 {
-	static unsigned short* VideoMemory = (unsigned short*)0xb8000;
+	static uint16_t* VideoMemory = (uint16_t*)0xb8000;
 
 	static uint8_t x = 0, y = 0;
 	//在屏幕上字符高25 80宽
@@ -49,6 +50,7 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
     InterruptManager interrupts(&gdt);
 
 	KeyboardDriver keyboard(&interrupts);
+	MouseDriver mouse(&interrupts);
 
 	interrupts.Activate();
 

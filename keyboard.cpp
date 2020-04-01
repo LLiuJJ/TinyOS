@@ -31,6 +31,12 @@ uint32_t KeyboardDriver::HandleInterrupt(uint32_t esp)
 {
     uint8_t key = dataport.Read();
 
+    static bool Shift = false;
+
+    switch(key)
+    {
+        case 0x02: if(Shift) printf("!");else printf("1");break;
+    }
     if(key < 0x80){
         switch(key)
         {
