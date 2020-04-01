@@ -1,5 +1,7 @@
 #include "types.h"
 #include "gdt.h"
+#include "port.h"
+#include "keyboard.h"
 #include "interrupts.h"
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
@@ -17,7 +19,7 @@ void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕�
 			break;
 
 		default:
-        		VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | str[i];
+        	VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | str[i];
 			x++;
 			break;
 		}
@@ -35,16 +37,6 @@ void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕�
 	}
 }
 
-typedef void (*constructor)();
-extern "C" constructor start_ctors;
-extern "C" constructor end_ctors;
-
-extern "C" void callConstructors()
-{
-	for(constructor* i = &start_ctors; i != &end_ctors; i++){
-		(*i)();
-	}
-}
 
 
 
@@ -53,11 +45,13 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 	printf("Hello world!\n");
 
 	GlobalDescriptorTable gdt;
-	InterruptManager interrupts(&gdt); //init
 
+    InterruptManager interrupts(&gdt);
 
-	interrupts.Activate();  //act
+	KeyboardDriver keyboard(&interrupts);
 
-	printf("-----\n");
+	interrupts.Activate();
+
+	printf("----111---");
 	while(1);
 }
