@@ -2,7 +2,7 @@
 #include "gdt.h"
 #include "port.h"
 #include "keyboard.h"
-#include "mouse.h"
+// #include "mouse.h"
 #include "interrupts.h"
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
@@ -38,22 +38,28 @@ void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕�
 	}
 }
 
-
+typedef void (*constructor)();
+extern "C" constructor start_ctors;
+extern "C" constructor end_ctors;
+extern "C" void callConstructors(){
+	for(constructor* i = &start_ctors; i != &end_ctors; i++){
+		(*i)();
+	}
+}
 
 
 extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_magic*/)
 {
 	printf("Hello world!\n");
-
+	printf("Hello world!\n");
 	GlobalDescriptorTable gdt;
 
-    InterruptManager interrupts(&gdt);
+    InterruptManager interrupts(0x20, &gdt);
 
 	KeyboardDriver keyboard(&interrupts);
-	MouseDriver mouse(&interrupts);
+	// MouseDriver mouse(&interrupts);
 
 	interrupts.Activate();
 
-	printf("----111---");
 	while(1);
 }
