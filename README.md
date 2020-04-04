@@ -3,7 +3,7 @@
 TinyOS 是一些简版的 OS 实现，下面列出的是主要要实现的功能。
 
 - 1     "Hello-World" Operating System, Boot-Process and Text-Output
-- 2	    Running the OS in a virtual machine (VirtualBox)
+- 2	    [Running the OS in a virtual machine (VirtualBox)](./doc/1.md)
 - 3	    Memory-Segmentation, Global Descriptor Table
 - 4	    Hardware-Communication / Ports
 - 5	    Interrupts
