@@ -1,10 +1,8 @@
 
 #include "mouse.h"
-#include "interrupts.h"
-
 
 MouseDriver::MouseDriver(InterruptManager *manager)
-: InterruptHandler(0x2C, manager),
+: InterruptHandler(manager, 0x2C),
   dataport(0x60),
   commandport(0x64)
 {
@@ -66,14 +64,15 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
         VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
                             | ((VideoMemory[80*y+x] & 0x0F00) << 4)
                             | ((VideoMemory[80*y+x] & 0x00FF));
-        for(uint8_t i = 0; i < 3; i++){
-            if(buffer[0] & (0x01 << i) != (buttons & (0x01 << i))){
-                VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
-                            | ((VideoMemory[80*y+x] & 0x0F00) << 4)
-                            | ((VideoMemory[80*y+x] & 0x00FF));
+//------------这个是记录你点击的位置-------------
+        // for(uint8_t i = 0; i < 3; i++){
+        //     if(buffer[0] & (0x01 << i) != (buttons & (0x01 << i))){
+        //         VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
+        //                     | ((VideoMemory[80*y+x] & 0x0F00) << 4)
+        //                     | ((VideoMemory[80*y+x] & 0x00FF));
                 
-            } 
-        }
+        //     } 
+        // }
 
         buttons = buffer[0];
     }

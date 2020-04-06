@@ -5,15 +5,15 @@
 ###  -fno-leading-underscore 强制更改目标文件中c符号的表达方式，一种用途是帮助链接旧的汇编代码。同时使gcc生成代码不与没有此设定的二进制代码兼容，并不是所有目标都完整支持
 ###  -fno-use-cxa-atexit Register destructors for objects with static storage duration提供析构函数
 ###  -fno-exceptions 启用内核开发模式
-GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
+GCCPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
 ###           ###
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 
-objects = loader.o gdt.o port.o interruptstubs.o interrupts.o keyboard.o kernel.o
+objects = loader.o gdt.o port.o interruptstubs.o interrupts.o keyboard.o mouse.o kernel.o
 
 %.o: %.cpp
-		g++ $(GPPPARAMS) -o $@ -c $<
+		gcc $(GCCPARAMS) -o $@ -c $<
 
 %.o: %.s
 		as $(ASPARAMS) -o $@ $<
