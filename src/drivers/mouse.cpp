@@ -1,6 +1,9 @@
 
-#include "mouse.h"
-#include "driver.h"
+#include <drivers/mouse.h>
+
+using namespace tinyos::common;
+using namespace tinyos::drivers;
+using namespace tinyos::hardwarecommunication;
 
 MouseEventHandler::MouseEventHandler()
 {

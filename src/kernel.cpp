@@ -1,10 +1,14 @@
-#include "types.h"
-#include "driver.h"
-#include "gdt.h"
-#include "port.h"
-#include "keyboard.h"
-#include "mouse.h"
-#include "interrupts.h"
+#include <common/types.h>
+#include <gdt.h>
+#include <hardwarecommunication/interrupts.h>
+#include <drivers/driver.h>
+#include <drivers/keyboard.h>
+#include <drivers/mouse.h>
+
+using namespace tinyos;
+using namespace tinyos::common;
+using namespace tinyos::hardwarecommunication;
+using namespace tinyos::drivers;
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
 {

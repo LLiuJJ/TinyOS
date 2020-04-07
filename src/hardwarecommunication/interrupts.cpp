@@ -1,6 +1,8 @@
 
-#include "interrupts.h"
+#include <hardwarecommunication/interrupts.h>
 
+using namespace tinyos::common;
+using namespace tinyos::hardwarecommunication;
 
 void printf(char* str);
 void printfHex(uint8_t);
