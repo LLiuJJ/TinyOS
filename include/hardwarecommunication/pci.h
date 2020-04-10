@@ -11,6 +11,22 @@ namespace tinyos
 {
     namespace hardwarecommunication
     {
+
+        enum BaseAddressRegisterType
+        {
+            MemoryMapping = 0,
+            InputOutput = 1
+        };
+
+        class BaseAddressRegister //内存映射
+        {
+        public:
+            bool prefetchable;
+            tinyos::common::uint8_t* address;
+            tinyos::common::uint32_t size;
+            BaseAddressRegisterType type;
+        };
+
         class PeripheralComponentInterconnectDeviceDescriptor
         {
         public:
@@ -48,9 +64,11 @@ namespace tinyos
             bool DeviceHasFunctions(tinyos::common::uint16_t bus, tinyos::common::uint16_t device);
             
             //
-            void SelectDrivers(tinyos::drivers::DriverManager * driverManager);
+            void SelectDrivers(tinyos::drivers::DriverManager * driverManager, tinyos::hardwarecommunication::InterruptManager*  interrupts);
+            tinyos::drivers::Driver* GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, tinyos::hardwarecommunication::InterruptManager*  interrupts);
             PeripheralComponentInterconnectDeviceDescriptor GetDeviceDescriptor(tinyos::common::uint16_t bus, tinyos::common::uint16_t device, tinyos::common::uint16_t function);
             
+            BaseAddressRegister GetBaseAddressRegister(tinyos::common::uint16_t bus, tinyos::common::uint16_t device, tinyos::common::uint16_t function, tinyos::common::uint16_t bar);
         };
 
     }

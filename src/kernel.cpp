@@ -131,7 +131,7 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 		drvManager.AddDriver(&mouse);
 
 		PeripheralComponentInterconnectController PCIController;
-		PCIController.SelectDrivers(&drvManager);
+		PCIController.SelectDrivers(&drvManager, &interrupts);
 
 	printf("Initializing Hareware, Stage 2\n");
 
