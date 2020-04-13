@@ -39,6 +39,8 @@ namespace tinyos
             virtual void PutPixel(tinyos::common::uint32_t x, tinyos::common::uint32_t y, tinyos::common::uint8_t r, tinyos::common::uint8_t g, tinyos::common::uint8_t b);
             virtual void PutPixel(tinyos::common::uint32_t x, tinyos::common::uint32_t y, tinyos::common::uint8_t colorIndex);
 
+            virtual void FillRectangle(tinyos::common::uint32_t x, tinyos::common::uint32_t y, tinyos::common::uint32_t w, tinyos::common::uint32_t h, tinyos::common::uint8_t r, tinyos::common::uint8_t g, tinyos::common::uint8_t b);
+
         };
 
     }
