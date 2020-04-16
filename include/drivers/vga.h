@@ -36,8 +36,8 @@ namespace tinyos
 
             virtual bool SupportsMode(tinyos::common::uint32_t width, tinyos::common::uint32_t height, tinyos::common::uint32_t colordepth);
             virtual bool SetMode(tinyos::common::uint32_t width, tinyos::common::uint32_t height, tinyos::common::uint32_t colordepth);
-            virtual void PutPixel(tinyos::common::uint32_t x, tinyos::common::uint32_t y, tinyos::common::uint8_t r, tinyos::common::uint8_t g, tinyos::common::uint8_t b);
-            virtual void PutPixel(tinyos::common::uint32_t x, tinyos::common::uint32_t y, tinyos::common::uint8_t colorIndex);
+            virtual void PutPixel(tinyos::common::int32_t x, tinyos::common::int32_t y, tinyos::common::uint8_t r, tinyos::common::uint8_t g, tinyos::common::uint8_t b);
+            virtual void PutPixel(tinyos::common::int32_t x, tinyos::common::int32_t y, tinyos::common::uint8_t colorIndex);
 
             virtual void FillRectangle(tinyos::common::uint32_t x, tinyos::common::uint32_t y, tinyos::common::uint32_t w, tinyos::common::uint32_t h, tinyos::common::uint8_t r, tinyos::common::uint8_t g, tinyos::common::uint8_t b);
 

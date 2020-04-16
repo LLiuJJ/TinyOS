@@ -8,6 +8,7 @@ using namespace tinyos::gui;
 
 Widget::Widget(Widget* parent, int32_t x, int32_t y, int32_t w, int32_t h,
                 uint8_t r, uint8_t g, uint8_t b)
+: KeyboardEventHandler()
 {
     this->parent = parent;
     this->x = x;
@@ -28,7 +29,7 @@ Widget::~Widget()
 void Widget::GetFocus(Widget* widget)
 {
     if(parent != 0)
-        parent->GetFocus(Widget);
+        parent->GetFocus(widget);
 }
 
 void Widget::ModeToScreen(int32_t &x, int32_t &y)
@@ -39,7 +40,7 @@ void Widget::ModeToScreen(int32_t &x, int32_t &y)
     y += this->y;
 }
 
-void Draw(GraphicsContext* gc)
+void Widget::Draw(GraphicsContext* gc)
 {
     int X = 0;
     int Y = 0;
@@ -47,13 +48,19 @@ void Draw(GraphicsContext* gc)
     gc->FillRectangle(X, Y, w, h, r, g, b);
 }
 
-void Widget::OnMouseDown(int32_t , int32_t y)
+void Widget::OnMouseDown(int32_t , int32_t y, uint8_t button)
 {
     if(Focussable)
         GetFocus(this);
 }
 
-void Widget::OnMouseUp(int32_t x, int32_t y)
+bool Widget::ContainsCoordinate(int32_t x, int32_t y)
+{
+    return this->x <= x && x < this->x + this->w
+        && this->y <= y && y < this->y + this->h;
+}
+
+void Widget::OnMouseUp(int32_t x, int32_t y, uint8_t button)
 {
 
 }
@@ -63,20 +70,10 @@ void Widget::OnMouseMove(int32_t oldx, int32_t oldy, common::int32_t newx, commo
 
 }
 
-void Widget::OnKeyDown(char* str)
-{
-
-}
-
-void Widget::OnKeyUp(char* str)
-{
-
-}
-
-
 CompositeWidget::CompositeWidget(Widget* parent, 
                 common::int32_t x, common::int32_t y, common::int32_t w, common::int32_t h,
                 common::uint8_t r, common::uint8_t g, common::uint8_t b)
+: Widget(parent, x, y, w, h, r, g, b)
 {
     focussedChild = 0;
     numChildren = 0;
@@ -94,6 +91,14 @@ void CompositeWidget::GetFocus(Widget* widget)
         parent->GetFocus(this);
 }
 
+bool CompositeWidget::AddChild(Widget* child)
+{
+    if(numChildren >= 100)
+        return false;
+    children[numChildren++] = child;
+    return true;
+}
+
 void CompositeWidget::Draw(GraphicsContext* gc)
 {
     Widget::Draw(gc);
@@ -101,21 +106,21 @@ void CompositeWidget::Draw(GraphicsContext* gc)
         children[i]->Draw(gc);
     }
 }
-void CompositeWidget::OnMouseDown(int32_t , int32_t y)
+void CompositeWidget::OnMouseDown(int32_t , int32_t y, uint8_t button)
 {
     for(int i = 0; i < numChildren; ++i){
-        if(children[i]->CompositeWidget(x - this->x, y - this->y)){
-            children[i]->OnMouseDown(x - this->x, y - this->y);
+        if(children[i]->ContainsCoordinate(x - this->x, y - this->y)){
+            children[i]->OnMouseDown(x - this->x, y - this->y, button);
             break;
         }
     }
 }
 
-void CompositeWidget::OnMouseUp(int32_t x, int32_t y)
+void CompositeWidget::OnMouseUp(int32_t x, int32_t y, uint8_t button)
 {
     for(int i = 0; i < numChildren; ++i){
-        if(children[i]->CompositeWidget(x - this->x, y - this->y)){
-            children[i]->OnMouseUp(x - this->x, y - this->y);
+        if(children[i]->ContainsCoordinate(x - this->x, y - this->y)){
+            children[i]->OnMouseUp(x - this->x, y - this->y, button);
             break;
         }
     }
@@ -126,7 +131,7 @@ void CompositeWidget::OnMouseMove(int32_t oldx, int32_t oldy, int32_t newx, int3
 {
     int firstchild = -1;
     for(int i = 0; i < numChildren; ++i){
-        if(children[i]->CompositeWidget(oldx - this->x, oldy - this->y)){
+        if(children[i]->ContainsCoordinate(oldx - this->x, oldy - this->y)){
             children[i]->OnMouseMove(oldx - this->x, oldy - this->y, newx - this->x, newy - this->y);
             firstchild = i;
             break;
@@ -134,7 +139,7 @@ void CompositeWidget::OnMouseMove(int32_t oldx, int32_t oldy, int32_t newx, int3
     }
 
     for(int i = 0; i < numChildren; ++i){
-        if(children[i]->CompositeWidget(newx - this->x, newy - this->y)){
+        if(children[i]->ContainsCoordinate(newx - this->x, newy - this->y)){
             if(firstchild != i)
                 children[i]->OnMouseMove(oldx - this->x, oldy - this->y, newx - this->x, newy - this->y);
             break;
@@ -143,13 +148,13 @@ void CompositeWidget::OnMouseMove(int32_t oldx, int32_t oldy, int32_t newx, int3
 
 }
 
-void CompositeWidget::OnKeyDown(char* str)
+void CompositeWidget::OnKeyDown(char str)
 {
     if(focussedChild != 0)
         focussedChild->OnKeyDown(str);
 }
 
-void CompositeWidget::OnKeyUp(char * str)
+void CompositeWidget::OnKeyUp(char str)
 {
     if(focussedChild != 0)
         focussedChild->OnKeyUp(str);

@@ -6,12 +6,14 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
-
+#include <gui/desktop.h>
+#include <gui/window.h>
 
 using namespace tinyos;
 using namespace tinyos::common;
 using namespace tinyos::hardwarecommunication;
 using namespace tinyos::drivers;
+using namespace tinyos::gui;
 
 void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕地址逐一显示，因为地址是固定从头显示
 {
@@ -122,14 +124,17 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 
 	printf("Initializing Hareware, Stage 1\n");
 
+	Desktop desktop(320, 200, 0x00, 0x00, 0xA8);
 	DriverManager drvManager;
 
-		PrintfKeyboardEventHandler kbhandler;
-		KeyboardDriver keyboard(&interrupts, &kbhandler);
+		// PrintfKeyboardEventHandler kbhandler;
+		// KeyboardDriver keyboard(&interrupts, &kbhandler);
+		KeyboardDriver keyboard(&interrupts, &desktop);
 		drvManager.AddDriver(&keyboard);
 
-		MouseToConsole mousehandler;
-		MouseDriver mouse(&interrupts, &mousehandler);
+		// MouseToConsole mousehandler;
+		// MouseDriver mouse(&interrupts, &mousehandler);
+		MouseDriver mouse(&interrupts, &desktop);
 		drvManager.AddDriver(&mouse);
 
 		PeripheralComponentInterconnectController PCIController;
@@ -142,10 +147,17 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 		drvManager.ActivateAll();
 
 	printf("Initializing Hareware, Stage 3\n");
+	
+	vga.SetMode(320, 200, 8);
+
+	// Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
+	// desktop.AddChild(&win1);
+	// Window win2(&desktop, 40, 30, 10, 10, 0x00, 0xA8, 0x00);
+	// desktop.AddChild(&win2);
+
 	interrupts.Activate();
 
-	vga.SetMode(320, 300, 0);
-	vga.FillRectangle(0, 0, 320, 200, 0x00, 0x00, 0xA8);
-
-	while(1);
+	while(1){
+		desktop.Draw(&vga);
+	}
 }
