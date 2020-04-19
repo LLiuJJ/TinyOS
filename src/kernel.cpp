@@ -8,6 +8,7 @@
 #include <drivers/vga.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
+#include <multitasking.h>
 
 using namespace tinyos;
 using namespace tinyos::common;
@@ -105,6 +106,22 @@ public:
 	}
 };
 
+
+void taskA()
+{
+	while(true){
+		printf("task A");
+	}
+}
+void taskB()
+{
+	while(true){
+		printf("task B");
+	}
+}
+
+
+
 typedef void (*constructor)();
 extern "C" constructor start_ctors;
 extern "C" constructor end_ctors;
@@ -120,21 +137,37 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 	printf("Hello world!\n");
 
 	GlobalDescriptorTable gdt;
-    InterruptManager interrupts(0x20, &gdt);
+    
+	TaskManager taskManager;
+	Task task1(&gdt, taskA);
+	Task task2(&gdt, taskB);
+	taskManager.AddTask(&task1);
+	taskManager.AddTask(&task2);
+
+	InterruptManager interrupts(0x20, &gdt, &taskManager);
 
 	printf("Initializing Hareware, Stage 1\n");
 
-	Desktop desktop(320, 200, 0x00, 0x00, 0xA8);
+	#ifdef GRAPHICSMODE
+		Desktop desktop(320, 200, 0x00, 0x00, 0xA8);
+	#endif
+
 	DriverManager drvManager;
 
-		// PrintfKeyboardEventHandler kbhandler;
-		// KeyboardDriver keyboard(&interrupts, &kbhandler);
-		KeyboardDriver keyboard(&interrupts, &desktop);
+		#ifdef GRAPHICSMODE
+			KeyboardDriver keyboard(&interrupts, &desktop);
+		#else
+			PrintfKeyboardEventHandler kbhandler;
+			KeyboardDriver keyboard(&interrupts, &kbhandler);
+		#endif
 		drvManager.AddDriver(&keyboard);
 
-		// MouseToConsole mousehandler;
-		// MouseDriver mouse(&interrupts, &mousehandler);
-		MouseDriver mouse(&interrupts, &desktop);
+		#ifdef GRAPHICSMODE
+			MouseDriver mouse(&interrupts, &desktop);
+		#else
+			MouseToConsole mousehandler;
+			MouseDriver mouse(&interrupts, &mousehandler);
+		#endif	
 		drvManager.AddDriver(&mouse);
 
 		PeripheralComponentInterconnectController PCIController;
@@ -148,16 +181,19 @@ extern "C" void kernelMain(void* multiboot_structure, unsigned int /*multiboot_m
 
 	printf("Initializing Hareware, Stage 3\n");
 	
-	vga.SetMode(320, 200, 8);
-
-	// Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
-	// desktop.AddChild(&win1);
-	// Window win2(&desktop, 40, 30, 10, 10, 0x00, 0xA8, 0x00);
-	// desktop.AddChild(&win2);
+	#ifdef GRAPHICSMODE
+		vga.SetMode(320, 200, 8);
+		Window win1(&desktop, 10, 10, 20, 20, 0xA8, 0x00, 0x00);
+		desktop.AddChild(&win1);
+		Window win2(&desktop, 40, 30, 10, 10, 0x00, 0xA8, 0x00);
+		desktop.AddChild(&win2);
+	#endif
 
 	interrupts.Activate();
 
 	while(1){
-		desktop.Draw(&vga);
+		#ifdef GRAPHICSMODE
+			desktop.Draw(&vga);
+		#endif
 	}
 }

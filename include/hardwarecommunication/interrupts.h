@@ -3,6 +3,7 @@
 #define __TINYOS__HARDWARECOMMUNICATION__INTERRUPTMANAGER_H
 
 #include <gdt.h>
+#include <multitasking.h>
 #include <common/types.h>
 #include <hardwarecommunication/port.h>
 
@@ -29,6 +30,7 @@ namespace tinyos
             protected:
                 static InterruptManager* ActiveInterruptManager;
                 InterruptHandler* handlers[256];
+                TaskManager *taskManager;
 
                 struct GateDescriptor
                 {
@@ -104,7 +106,7 @@ namespace tinyos
                 Port8BitSlow programmableInterruptControllerSlaveDataPort;
 
             public:
-                InterruptManager(tinyos::common::uint16_t hardwareInterruptOffset, tinyos::GlobalDescriptorTable* globalDescriptorTable);
+                InterruptManager(tinyos::common::uint16_t hardwareInterruptOffset, tinyos::GlobalDescriptorTable* globalDescriptorTable, tinyos::TaskManager* taskManager);
                 ~InterruptManager();
                 tinyos::common::uint16_t HardwareInterruptOffset();
                 void Activate();
