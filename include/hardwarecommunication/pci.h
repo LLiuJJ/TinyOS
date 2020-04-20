@@ -7,6 +7,8 @@
 #include <hardwarecommunication/port.h>
 #include <hardwarecommunication/interrupts.h>
 
+#include <memorymanagement.h>
+
 namespace tinyos
 {
     namespace hardwarecommunication
