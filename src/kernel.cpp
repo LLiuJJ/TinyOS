@@ -59,6 +59,19 @@ void printfHex(uint8_t key)
     printf(foo);
 }
 
+void printfHex16(uint16_t key)
+{
+    printfHex((key >> 8) & 0xFF);
+    printfHex( key & 0xFF);
+}
+void printfHex32(uint32_t key)
+{
+    printfHex((key >> 24) & 0xFF);
+    printfHex((key >> 16) & 0xFF);
+    printfHex((key >> 8) & 0xFF);
+    printfHex( key & 0xFF);
+}
+
 class PrintfKeyboardEventHandler : public KeyboardEventHandler
 {
 public:
