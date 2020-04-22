@@ -11,6 +11,8 @@
 #include <gui/window.h>
 #include <multitasking.h>
 
+#include <drivers/amd_am79c973.h>
+
 using namespace tinyos;
 using namespace tinyos::common;
 using namespace tinyos::hardwarecommunication;
@@ -220,6 +222,9 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 		Window win2(&desktop, 40, 30, 10, 10, 0x00, 0xA8, 0x00);
 		desktop.AddChild(&win2);
 	#endif
+
+	amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+	eth0->Send((uint8_t*)"Hello Network", 13);
 
 	interrupts.Activate();
 
