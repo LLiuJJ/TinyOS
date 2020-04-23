@@ -7,6 +7,7 @@
 #include <drivers/keyboard.h>
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
+#include <drivers/ata.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
 #include <multitasking.h>
@@ -223,8 +224,29 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 		desktop.AddChild(&win2);
 	#endif
 
-	amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
-	eth0->Send((uint8_t*)"Hello Network", 13);
+	// interrupt 14
+	AdvancedTechnologyAttachment ata0m(0x1F0, true);
+	printf("ATA Primary Master: ");
+	ata0m.Identify();
+	AdvancedTechnologyAttachment ata0s(0x1F0, false);
+	printf("ATA Primary Slave: ");
+	ata0s.Identify();
+	
+	char* atabuffer = "http://LearnBycoding.cn";
+	ata0s.Write28(0, (uint8_t*)atabuffer, 21);
+	ata0s.Flush();
+
+	ata0s.Read28(0, (uint8_t*)atabuffer, 21);
+
+	// interrupt 15
+	AdvancedTechnologyAttachment ata1m(0x170, true);
+	AdvancedTechnologyAttachment ata1s(0x170, false);
+
+	// third: 0x1E8
+	// fourth: 0x168
+
+	// amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+	// eth0->Send((uint8_t*)"Hello Network", 13);
 
 	interrupts.Activate();
 
