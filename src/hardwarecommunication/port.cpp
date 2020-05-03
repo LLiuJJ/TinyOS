@@ -1,6 +1,8 @@
 
-#include "types.h"
-#include "port.h"
+#include <hardwarecommunication/port.h>
+
+using namespace tinyos::common;
+using namespace tinyos::hardwarecommunication;
 
 Port::Port(uint16_t portnumber)
 {

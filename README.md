@@ -30,6 +30,11 @@ TinyOS 是一些简版的 OS 实现，下面列出的是主要要实现的功能
 - 26	Network: Transmission Control Protocol (TCP)
 - 27	Network: Transmission Control Protocol (TCP)
 - 28	Network: TCP and Hyper Text Terminal Protocol (HTTP)
+-------------------------
+make命令
+- `make clean`  删除已经编译的*.o mykernel.bin mykernel.iso。
+- `make run`    这个包括编译运行代码，并且会启动virtualbox运行刚编译出来的系统。
+- `make mykernel.iso`  创建iso文件，首先你需要下载xorriso软件，不然不能使用该命令。
 
 ##### 参考资料
 
