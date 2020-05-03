@@ -5,17 +5,38 @@
 ###  -fno-leading-underscore 强制更改目标文件中c符号的表达方式，一种用途是帮助链接旧的汇编代码。同时使gcc生成代码不与没有此设定的二进制代码兼容，并不是所有目标都完整支持
 ###  -fno-use-cxa-atexit Register destructors for objects with static storage duration提供析构函数
 ###  -fno-exceptions 启用内核开发模式
-GPPPARAMS = -m32 -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
+GCCPARAMS = -m32 -Iinclude -fno-use-cxa-atexit -nostdlib -fno-builtin -fno-rtti -fno-exceptions -fno-leading-underscore -Wno-write-strings
 ###           ###
 ASPARAMS = --32
 LDPARAMS = -melf_i386
 
-objects = loader.o gdt.o port.o interruptstubs.o interrupts.o keyboard.o kernel.o
+objects = obj/loader.o \
+		obj/gdt.o \
+		obj/memorymanagement.o \
+		obj/drivers/driver.o \
+		obj/hardwarecommunication/port.o \
+		obj/hardwarecommunication/interruptstubs.o \
+		obj/hardwarecommunication/interrupts.o \
+		obj/syscalls.o \
+		obj/multitasking.o \
+		obj/drivers/amd_am79c973.o \
+		obj/hardwarecommunication/pci.o \
+		obj/drivers/keyboard.o \
+		obj/drivers/mouse.o \
+		obj/drivers/vga.o \
+		obj/drivers/ata.o \
+		obj/gui/widget.o \
+		obj/gui/window.o \
+		obj/gui/desktop.o \
+		obj/net/etherframe.o \
+		obj/kernel.o
 
-%.o: %.cpp
-		g++ $(GPPPARAMS) -o $@ -c $<
+obj/%.o: src/%.cpp
+		mkdir -p $(@D)
+		gcc $(GCCPARAMS) -o $@ -c $<
 
-%.o: %.s
+obj/%.o: src/%.s
+		mkdir -p $(@D)
 		as $(ASPARAMS) -o $@ $<
 
 mykernel.bin: linker.ld $(objects)
@@ -49,6 +70,6 @@ run: mykernel.iso
 #clean .o .bin .iso
 .PHONY: clean
 clean:
-	rm -f $(objects) mykernel.bin mykernel.iso
+	rm -rf obj mykernel.bin mykernel.iso
 
 	

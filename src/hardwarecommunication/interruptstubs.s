@@ -2,21 +2,22 @@
 
 .section .text
 
-.extern _ZN16InterruptManager15HandleInterruptEhj
+.extern _ZN6tinyos21hardwarecommunication16InterruptManager15HandleInterruptEhj
 
 
 .macro HandleException num
-.global _ZN16InterruptManager19HandleException\num\()Ev
-_ZN16InterruptManager19HandleException\num\()Ev:
+.global _ZN6tinyos21hardwarecommunication16InterruptManager19HandleException\num\()Ev
+_ZN6tinyos21hardwarecommunication16InterruptManager19HandleException\num\()Ev:
     movb $\num, (interruptnumber)
     jmp int_bottom
 .endm
 
 
 .macro HandleInterruptRequest num
-.global _ZN16InterruptManager26HandleInterruptRequest\num\()Ev
-_ZN16InterruptManager26HandleInterruptRequest\num\()Ev:
+.global _ZN6tinyos21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev
+_ZN6tinyos21hardwarecommunication16InterruptManager26HandleInterruptRequest\num\()Ev:
     movb $\num + IRQ_BASE, (interruptnumber)
+    pushl $0
     jmp int_bottom
 .endm
 
@@ -60,16 +61,29 @@ HandleInterruptRequest 0x0E
 HandleInterruptRequest 0x0F
 HandleInterruptRequest 0x31
 
+HandleInterruptRequest 0x80
+
+
+
 int_bottom:
 
-    # register sichern
-    pusha
-    pushl %ds
-    pushl %es
-    pushl %fs
-    pushl %gs
+    # save register 
+    #pusha
+    #pushl %ds
+    #pushl %es
+    #pushl %fs
+    #pushl %gs
 
-    # ring 0 segment register laden
+    pushl %ebp
+    pushl %edi
+    pushl %esi
+
+    pushl %edx
+    pushl %ecx
+    pushl %edx
+    pushl %eax
+
+    # load ring 0 segment register laden
     #cld
     #mov $0x10, %eax
     #mov %eax, %eds
@@ -78,19 +92,30 @@ int_bottom:
     # C++ Handler aufrufen
     pushl %esp
     push (interruptnumber)
-    call _ZN16InterruptManager15HandleInterruptEhj
-    add %esp, 6
-    mov %eax, %esp # den stack wechseln
+    call _ZN6tinyos21hardwarecommunication16InterruptManager15HandleInterruptEhj
+    #add %esp, 6
+    mov %eax, %esp # switch the stack 
 
-    # register laden
-    pop %gs
-    pop %fs
-    pop %es
-    pop %ds
-    popa
+    # restore registers
+    popl %eax
+    popl %edx
+    popl %ecx
+    popl %edx
+    
+    popl %esi
+    popl %edi
+    popl %ebp
 
-.global _ZN16InterruptManager15InterruptIgnoreEv
-_ZN16InterruptManager15InterruptIgnoreEv:
+    #pop %gs
+    #pop %fs
+    #pop %es
+    #pop %ds
+    #popa
+
+    add $4, %esp
+
+.global _ZN6tinyos21hardwarecommunication16InterruptManager15InterruptIgnoreEv
+_ZN6tinyos21hardwarecommunication16InterruptManager15InterruptIgnoreEv:
 
     iret
 

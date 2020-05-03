@@ -1,5 +1,8 @@
-#include "types.h"
-#include "gdt.h"
+
+#include <gdt.h>
+
+using namespace tinyos;
+using namespace tinyos::common;
 
 GlobalDescriptorTable::GlobalDescriptorTable()
 :nullSegmentSelector(0, 0, 0),
