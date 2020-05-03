@@ -37,7 +37,7 @@ namespace tinyos
                 unsigned numSendBuffers : 4;
                 unsigned reserved2 : 4;
                 unsigned numRecvBuffers : 4;
-                common::uint64_t physicalAddress : 48;
+                common::uint64_t physicalAddress : 48; // 物理MAC地址
                 common::uint16_t reserved3;
                 common::uint64_t logicalAddress;
                 common::uint32_t recvBufferDescrAddress;
@@ -90,6 +90,8 @@ namespace tinyos
 
             void SetHandler(RawDataHandler* handler);
             common::uint64_t GetMACAddress();
+            void SetIPAddress(common::uint32_t ip);
+            common::uint32_t GetIPAddress();
         };
     }
 }
