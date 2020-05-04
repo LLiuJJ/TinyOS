@@ -193,10 +193,9 @@ void amd_am79c973::Receive()
     for(; (recvBufferDescr[currentRecvBuffer].flags & 0x80000000) == 0; 
         currentRecvBuffer = (currentRecvBuffer + 1) % 8){
         if(!(recvBufferDescr[currentRecvBuffer].flags & 0x40000000)
-         && (recvBufferDescr[currentRecvBuffer].flags & 0x03000000) == 0x03000000
-         ){
+         && (recvBufferDescr[currentRecvBuffer].flags & 0x03000000) == 0x03000000){
             uint32_t size = recvBufferDescr[currentRecvBuffer].flags & 0xFFF;
-            if(size > 64) // remove checksun
+            if(size > 64) // remove checksum
                 size -= 4;
 
             uint8_t* buffer = (uint8_t*)(recvBufferDescr[currentRecvBuffer].address);
