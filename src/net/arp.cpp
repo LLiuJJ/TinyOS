@@ -23,14 +23,12 @@ bool AddressResolutionProtocol::OnEtherFrameReceived(uint8_t* etherframePayload,
         return false;
     
     AddressResolutionProtocolMessage* arp = (AddressResolutionProtocolMessage*)etherframePayload;
-    if(arp->hardwareType == 0x0100)
-    {
+    if(arp->hardwareType == 0x0100){
         
         if(arp->protocol == 0x0008
         && arp->hardwareAddressSize == 6
         && arp->protocolAddressSize == 4
-        && arp->dstIP == backend->GetIPAddress())
-        {
+        && arp->dstIP == backend->GetIPAddress()){
             
             switch(arp->command)
             {
@@ -45,8 +43,7 @@ bool AddressResolutionProtocol::OnEtherFrameReceived(uint8_t* etherframePayload,
                     break;
                     
                 case 0x0200: // response
-                    if(numCacheEntries < 128)
-                    {
+                    if(numCacheEntries < 128){
                         IPcache[numCacheEntries] = arp->srcIP;
                         MACcache[numCacheEntries] = arp->srcMAC;
                         numCacheEntries++;

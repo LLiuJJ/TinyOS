@@ -59,15 +59,13 @@ bool EtherFrameProvider::OnRawDataReceived(common::uint8_t* buffer, common::uint
     bool sendBack = false;
     
     if(frame->dstMAC_BE == 0xFFFFFFFFFFFF
-    || frame->dstMAC_BE == backend->GetMACAddress())
-    {
+    || frame->dstMAC_BE == backend->GetMACAddress()){
         if(handlers[frame->etherType_BE] != 0)
             sendBack = handlers[frame->etherType_BE]->OnEtherFrameReceived(
                 buffer + sizeof(EtherFrameHeader), size - sizeof(EtherFrameHeader));
     }
     
-    if(sendBack)
-    {
+    if(sendBack){
         frame->dstMAC_BE = frame->srcMAC_BE;
         frame->srcMAC_BE = backend->GetMACAddress();
     }
