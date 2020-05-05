@@ -18,6 +18,7 @@
 #include <net/arp.h>
 #include <net/ipv4.h>
 #include <net/icmp.h>
+#include <net/udp.h>
 
 
 using namespace tinyos;
@@ -127,6 +128,19 @@ public:
         VideoMemory[80*y+x] = ((VideoMemory[80*y+x] & 0xF000) >> 4)
                         | ((VideoMemory[80*y+x] & 0x0F00) << 4)
                         | ((VideoMemory[80*y+x] & 0x00FF));
+	}
+};
+
+class PrintfUDPHandler : public UserDatagramProtocolHandler
+{
+public:
+	void HandlerUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
+	{
+		char *foo = " ";
+		for(int i = 0; i < size; i++){
+			foo[0] = data[i];
+			printf(foo);
+		}
 	}
 };
 
@@ -282,6 +296,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 
 	InternetProtocolProvider ipv4(&etherframe, &arp, gip_be, subnet_be);	
 	InternetControlMessageProtocol icmp(&ipv4);
+	UserDatagramProtocolProvider udp(&ipv4);
 	// etherframe.Send(0xFFFFFFFFFFFF, 0X0608, (uint8_t*)"FOO", 3);
 	//eth0->Send((uint8_t*)"Hello Network", 13);
 
@@ -293,6 +308,13 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 	arp.BroadcastMACAddress(gip_be);
 	icmp.RequestEchoReply(gip_be);
 
+	PrintfUDPHandler udphandler;
+	// UserDatagramProtocolSocket* udpsocket = udp.Connect(gip_be, 1234);
+	// udp.Bind(udpsocket, &udphandler);
+	// udpsocket->Send((uint8_t*)"Hello UDP!", 10);
+
+	UserDatagramProtocolSocket* udpsocket = udp.Listen(1234);
+	udp.Bind(udpsocket, &udphandler);
 
 	while(1){
 		#ifdef GRAPHICSMODE
