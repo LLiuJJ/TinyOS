@@ -5,13 +5,6 @@ using namespace tinyos;
 using namespace tinyos::common;
 using namespace tinyos::net;
 
-struct UserDatagramProtocolHeader
-{
-common::uint16_t srcPort;
-common::uint16_t dstPort;
-common::uint16_t length;
-common::uint16_t checksum;
-}__attribute((packed));
 
 UserDatagramProtocolHandler::UserDatagramProtocolHandler()
 {

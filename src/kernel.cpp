@@ -19,6 +19,7 @@
 #include <net/ipv4.h>
 #include <net/icmp.h>
 #include <net/udp.h>
+#include <net/tcp.h>
 
 
 using namespace tinyos;
@@ -143,6 +144,36 @@ public:
 		}
 	}
 };
+
+class PrintfTCPHandler : public TransmissionControlProtocolHandler
+{
+public:
+	bool HandleTransmissionControlProtocolMessage(TransmissionControlProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
+	{
+		char *foo = " ";
+		for(int i = 0; i < size; i++){
+			foo[0] = data[i];
+			printf(foo);
+		}
+		if(size > 4
+			&& data[0] == 'G'
+			&& data[1] == 'E'
+			&& data[2] == 'T'
+			&& data[3] == ' '
+			&& data[4] == '/'
+			&& data[5] == ' '
+			&& data[6] == 'H'
+			&& data[7] == 'T'
+			&& data[8] == 'T'
+			&& data[9] == 'P'){
+			socket->Send((uint8_t*)"HTTP/1.1 200 OK\r\nServer:Myos\r\nContent-Type: text/html\r\n\r\n<html><head><titile>My Operating System</title></head><body><b>My Operating System</b> http://learnbycoding.cn/#/</body></html>\r\n", 196);
+			socket->Disconnect();
+		
+		}
+		return true;
+	}
+};
+
 
 void sysprintf(char* str)
 {
@@ -297,24 +328,31 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 	InternetProtocolProvider ipv4(&etherframe, &arp, gip_be, subnet_be);	
 	InternetControlMessageProtocol icmp(&ipv4);
 	UserDatagramProtocolProvider udp(&ipv4);
+	TransmissionControlProtocolProvider tcp(&ipv4);
 	// etherframe.Send(0xFFFFFFFFFFFF, 0X0608, (uint8_t*)"FOO", 3);
 	//eth0->Send((uint8_t*)"Hello Network", 13);
 
 	interrupts.Activate();
 	
-	printf("\n\n\n\n\n\n\n\n");
+	printf("\n\n\n\n\n");
 	// arp.Resolve(gip_be);
 	// ipv4.Send(gip_be, 0x0000, (uint8_t*)"foobar", 6);
 	arp.BroadcastMACAddress(gip_be);
-	icmp.RequestEchoReply(gip_be);
 
-	PrintfUDPHandler udphandler;
+	PrintfTCPHandler tcphandler;
+	TransmissionControlProtocolSocket* tcpsocket = tcp.Listen(1234);
+	tcp.Bind(tcpsocket, &tcphandler);
+	// tcpsocket->Send((uint8_t*)"Hello TCP!", 10);
+
+	// icmp.RequestEchoReply(gip_be);
+
+	// PrintfUDPHandler udphandler;
 	// UserDatagramProtocolSocket* udpsocket = udp.Connect(gip_be, 1234);
 	// udp.Bind(udpsocket, &udphandler);
 	// udpsocket->Send((uint8_t*)"Hello UDP!", 10);
 
-	UserDatagramProtocolSocket* udpsocket = udp.Listen(1234);
-	udp.Bind(udpsocket, &udphandler);
+	// UserDatagramProtocolSocket* udpsocket = udp.Listen(1234);
+	// udp.Bind(udpsocket, &udphandler);
 
 	while(1){
 		#ifdef GRAPHICSMODE
