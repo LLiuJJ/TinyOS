@@ -9,6 +9,7 @@
 #include <drivers/mouse.h>
 #include <drivers/vga.h>
 #include <drivers/ata.h>
+#include <filesystem/msdospart.h>
 #include <gui/desktop.h>
 #include <gui/window.h>
 #include <multitasking.h>
@@ -26,6 +27,7 @@ using namespace tinyos;
 using namespace tinyos::common;
 using namespace tinyos::hardwarecommunication;
 using namespace tinyos::drivers;
+using namespace tinyos::filesystem;
 using namespace tinyos::gui;
 using namespace tinyos::net;
 
@@ -289,6 +291,9 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 	printf("ATA Primary Slave: ");
 	ata0s.Identify();
 	
+	printf("\n\n\n\n\n");
+    MSDOSPartitionTable::ReadPartitions(&ata0s);
+
 	char* atabuffer = "https://LearnBycoding.cn";
 	// ata0s.Write28(0, (uint8_t*)atabuffer, 21);
 	// ata0s.Flush();
@@ -333,7 +338,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 	// // etherframe.Send(0xFFFFFFFFFFFF, 0X0608, (uint8_t*)"FOO", 3);
 	// //eth0->Send((uint8_t*)"Hello Network", 13);
 
-	// interrupts.Activate();
+	interrupts.Activate();
 	
 	// printf("\n\n\n\n\n");
 	// // arp.Resolve(gip_be);
