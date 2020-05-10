@@ -281,78 +281,79 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 	#endif
 
 	// interrupt 14
-	// AdvancedTechnologyAttachment ata0m(0x1F0, true);
-	// printf("ATA Primary Master: ");
-	// ata0m.Identify();
-	// AdvancedTechnologyAttachment ata0s(0x1F0, false);
-	// printf("ATA Primary Slave: ");
-	// ata0s.Identify();
+	AdvancedTechnologyAttachment ata0m(0x1F0, true);
+	printf("ATA Primary Master: ");
+	ata0m.Identify();
+
+	AdvancedTechnologyAttachment ata0s(0x1F0, false);
+	printf("ATA Primary Slave: ");
+	ata0s.Identify();
 	
-	// char* atabuffer = "http://LearnBycoding.cn";
+	char* atabuffer = "https://LearnBycoding.cn";
 	// ata0s.Write28(0, (uint8_t*)atabuffer, 21);
 	// ata0s.Flush();
 
 	// ata0s.Read28(0, (uint8_t*)atabuffer, 21);
 
-	// // interrupt 15
-	// AdvancedTechnologyAttachment ata1m(0x170, true);
-	// AdvancedTechnologyAttachment ata1s(0x170, false);
+	// interrupt 15
+	AdvancedTechnologyAttachment ata1m(0x170, true);
+	AdvancedTechnologyAttachment ata1s(0x170, false);
 
 	// third: 0x1E8
 	// fourth: 0x168
 
-	amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
+	// amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
 	
-	uint8_t ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;
-	uint32_t ip_be = ((uint32_t)ip4 << 24)
-					|((uint32_t)ip3 << 16)
-					|((uint32_t)ip2 << 8)
-					|(uint32_t)ip1;
+	// uint8_t ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;
+	// uint32_t ip_be = ((uint32_t)ip4 << 24)
+	// 				|((uint32_t)ip3 << 16)
+	// 				|((uint32_t)ip2 << 8)
+	// 				|(uint32_t)ip1;
 	
-	eth0->SetIPAddress(ip_be);
-	EtherFrameProvider etherframe(eth0);
-	AddressResolutionProtocol arp(&etherframe);
+	// eth0->SetIPAddress(ip_be);
+	// EtherFrameProvider etherframe(eth0);
+	// AddressResolutionProtocol arp(&etherframe);
 
-	uint8_t gip1 = 10, gip2 = 0, gip3 = 2, gip4 = 2;
-	uint32_t gip_be = ((uint32_t)gip4 << 24)
-					|((uint32_t)gip3 << 16)
-					|((uint32_t)gip2 << 8)
-					|(uint32_t)gip1;
+	// uint8_t gip1 = 10, gip2 = 0, gip3 = 2, gip4 = 2;
+	// uint32_t gip_be = ((uint32_t)gip4 << 24)
+	// 				|((uint32_t)gip3 << 16)
+	// 				|((uint32_t)gip2 << 8)
+	// 				|(uint32_t)gip1;
 
-	uint8_t subnet1 = 255, subnet2 = 255, subnet3 = 255, subnet4 = 0;
-	uint32_t subnet_be = ((uint32_t)subnet4 << 24)
-					|((uint32_t)subnet3 << 16)
-					|((uint32_t)subnet2 << 8)
-					|(uint32_t)subnet1;
+	// uint8_t subnet1 = 255, subnet2 = 255, subnet3 = 255, subnet4 = 0;
+	// uint32_t subnet_be = ((uint32_t)subnet4 << 24)
+	// 				|((uint32_t)subnet3 << 16)
+	// 				|((uint32_t)subnet2 << 8)
+	// 				|(uint32_t)subnet1;
 
-	InternetProtocolProvider ipv4(&etherframe, &arp, gip_be, subnet_be);	
-	InternetControlMessageProtocol icmp(&ipv4);
-	UserDatagramProtocolProvider udp(&ipv4);
-	TransmissionControlProtocolProvider tcp(&ipv4);
-	// etherframe.Send(0xFFFFFFFFFFFF, 0X0608, (uint8_t*)"FOO", 3);
-	//eth0->Send((uint8_t*)"Hello Network", 13);
+	// InternetProtocolProvider ipv4(&etherframe, &arp, gip_be, subnet_be);	
+	// InternetControlMessageProtocol icmp(&ipv4);
+	// UserDatagramProtocolProvider udp(&ipv4);
+	// TransmissionControlProtocolProvider tcp(&ipv4);
+	// // etherframe.Send(0xFFFFFFFFFFFF, 0X0608, (uint8_t*)"FOO", 3);
+	// //eth0->Send((uint8_t*)"Hello Network", 13);
 
-	interrupts.Activate();
+	// interrupts.Activate();
 	
-	printf("\n\n\n\n\n");
-	// arp.Resolve(gip_be);
-	// ipv4.Send(gip_be, 0x0000, (uint8_t*)"foobar", 6);
-	arp.BroadcastMACAddress(gip_be);
+	// printf("\n\n\n\n\n");
+	// // arp.Resolve(gip_be);
+	// // ipv4.Send(gip_be, 0x0000, (uint8_t*)"foobar", 6);
+	// arp.BroadcastMACAddress(gip_be);
 
-	PrintfTCPHandler tcphandler;
-	TransmissionControlProtocolSocket* tcpsocket = tcp.Listen(1234);
-	tcp.Bind(tcpsocket, &tcphandler);
-	// tcpsocket->Send((uint8_t*)"Hello TCP!", 10);
+	// PrintfTCPHandler tcphandler;
+	// TransmissionControlProtocolSocket* tcpsocket = tcp.Listen(1234);
+	// tcp.Bind(tcpsocket, &tcphandler);
+	// // tcpsocket->Send((uint8_t*)"Hello TCP!", 10);
 
-	// icmp.RequestEchoReply(gip_be);
+	// // icmp.RequestEchoReply(gip_be);
 
-	// PrintfUDPHandler udphandler;
-	// UserDatagramProtocolSocket* udpsocket = udp.Connect(gip_be, 1234);
-	// udp.Bind(udpsocket, &udphandler);
-	// udpsocket->Send((uint8_t*)"Hello UDP!", 10);
+	// // PrintfUDPHandler udphandler;
+	// // UserDatagramProtocolSocket* udpsocket = udp.Connect(gip_be, 1234);
+	// // udp.Bind(udpsocket, &udphandler);
+	// // udpsocket->Send((uint8_t*)"Hello UDP!", 10);
 
-	// UserDatagramProtocolSocket* udpsocket = udp.Listen(1234);
-	// udp.Bind(udpsocket, &udphandler);
+	// // UserDatagramProtocolSocket* udpsocket = udp.Listen(1234);
+	// // udp.Bind(udpsocket, &udphandler);
 
 	while(1){
 		#ifdef GRAPHICSMODE
