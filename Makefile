@@ -25,10 +25,17 @@ objects = obj/loader.o \
 		obj/drivers/mouse.o \
 		obj/drivers/vga.o \
 		obj/drivers/ata.o \
+		obj/filesystem/msdospart.o \
+		obj/filesystem/fat.o \
 		obj/gui/widget.o \
 		obj/gui/window.o \
 		obj/gui/desktop.o \
 		obj/net/etherframe.o \
+		obj/net/arp.o \
+		obj/net/ipv4.o \
+		obj/net/icmp.o \
+		obj/net/udp.o \
+		obj/net/tcp.o \
 		obj/kernel.o
 
 obj/%.o: src/%.cpp

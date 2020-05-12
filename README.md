@@ -2,8 +2,8 @@
 
 TinyOS 是一些简版的 OS 实现，下面列出的是主要要实现的功能。
 
-- 1     "Hello-World" Operating System, Boot-Process and Text-Output
-- 2	    [Running the OS in a virtual machine (VirtualBox)](./doc/1.md)
+- 1     ["Hello-World" Operating System, Boot-Process and Text-Output](./doc/1/1.md)
+- 2	    Running the OS in a virtual machine (VirtualBox)
 - 3	    Memory-Segmentation, Global Descriptor Table
 - 4	    Hardware-Communication / Ports
 - 5	    Interrupts
@@ -30,6 +30,8 @@ TinyOS 是一些简版的 OS 实现，下面列出的是主要要实现的功能
 - 26	Network: Transmission Control Protocol (TCP)
 - 27	Network: Transmission Control Protocol (TCP)
 - 28	Network: TCP and Hyper Text Terminal Protocol (HTTP)
+- 29    Partition Table
+- 30    File Allocation Table(FAT32)
 -------------------------
 make命令
 - `make clean`  删除已经编译的*.o mykernel.bin mykernel.iso。
