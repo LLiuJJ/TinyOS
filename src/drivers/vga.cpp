@@ -25,7 +25,7 @@ VideoGraphicsArray::~VideoGraphicsArray()
 
 }
 
-
+// 这个是对应320*200屏幕的，依次设计端口
 void VideoGraphicsArray::WriteRegisters(uint8_t* registers)
 {
     // misc
@@ -69,12 +69,12 @@ bool VideoGraphicsArray::SupportsMode(uint32_t width, uint32_t height, uint32_t 
 {
     return width == 320 && height == 200 & colordepth == 8;
 }
-
+// 设置屏幕宽、高、位深度
 bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t colordepth)
 {
     if(!SupportsMode(width, height, colordepth))
         return false;
-
+    //320*200屏幕，这个就是计算机本身决定
     unsigned char g_320x200x256[] =
     {
         /* MISC */
@@ -98,7 +98,7 @@ bool VideoGraphicsArray::SetMode(uint32_t width, uint32_t height, uint32_t color
     WriteRegisters(g_320x200x256);
     return true;
 }
-
+// 获取地址初始
 uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
 {
     graphicsControllerIndexPort.Write(0x06);
@@ -112,7 +112,7 @@ uint8_t* VideoGraphicsArray::GetFrameBufferSegment()
     case 3: return (uint8_t*)0xB8000;
     }
 }
-
+// 设置点，通过改变点地址值设置色彩
 void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex)
 {
     if(x < 0 || 320 <= x || y < 0 || 200 <= y)
@@ -120,7 +120,7 @@ void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t colorIndex)
     uint8_t* pixelAddress = GetFrameBufferSegment() + 320*y + x;
     *pixelAddress = colorIndex;
 }
-
+// 通过rgb三色，判断色彩值
 uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b)
 {
     if(r == 0x00 && g == 0x00 && b == 0x00) return 0x00; //black
@@ -130,7 +130,7 @@ uint8_t VideoGraphicsArray::GetColorIndex(uint8_t r, uint8_t g, uint8_t b)
     if(r == 0xFF && g == 0xFF && b == 0xFF) return 0x3F; //white
     return 0x00;
 }
-
+// 设置点，和图形学设置点一样
 void VideoGraphicsArray::PutPixel(int32_t x, int32_t y, uint8_t r, uint8_t g, uint8_t b)
 {
     PutPixel(x, y, GetColorIndex(r, g, b));

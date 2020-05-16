@@ -53,7 +53,7 @@ namespace tinyos
                 common::uint32_t avail;
             } __attribute__((packed));
 
-            hardwarecommunication::Port16Bit MACAddress0Port;
+            hardwarecommunication::Port16Bit MACAddress0Port; // MAC地址共48位
             hardwarecommunication::Port16Bit MACAddress2Port;
             hardwarecommunication::Port16Bit MACAddress4Port;
             hardwarecommunication::Port16Bit registerDataPort;

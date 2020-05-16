@@ -54,13 +54,22 @@ void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕�
 			y++;
 			x = 0;
 		}
-		if(y >= 25){ //超过屏幕，清屏
-			for(y = 0; y < 25; y++)
-				for(x = 0; x < 80; x++) // | ‘  ’ 清屏
-					VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | ' ';
+		if(y >= 25){//超过屏幕，内容上移，强迫症清屏看不见了
+			for(y = 0; y < 24; y++)
+				for(x = 0; x < 80; x++)
+					VideoMemory[80*y+x] = VideoMemory[80*(y+1)+x];
+			for(x = 0; x < 80; x++)
+				VideoMemory[80*24+x] = (VideoMemory[80*24+x] & 0xFF00) | ' ';
+			y = 24;
 			x = 0;
-			y = 0;
 		}
+		// if(y >= 25){ //超过屏幕，清屏
+		// 	for(y = 0; y < 25; y++)
+		// 		for(x = 0; x < 80; x++) // | ‘  ’ 清屏
+		// 			VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | ' ';
+		// 	x = 0;
+		// 	y = 0;
+		// }
 	}
 }
 
@@ -212,7 +221,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 
 	GlobalDescriptorTable gdt;
     
-	uint32_t* menupper = (uint32_t*)(((size_t)multiboot_structure) + 8);
+	uint32_t* menupper = (uint32_t*)(((size_t)multiboot_structure) + 8); // 8字节用于引导
 	size_t heap = 10 * 1024  * 1024;
 	MemoryManager memoryManager(heap, (*menupper) * 1024 - heap - 10*1024);
 
@@ -270,7 +279,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 
 
 	printf("Initializing Hareware, Stage 2\n");
-		drvManager.ActivateAll();
+	drvManager.ActivateAll();  //启动所有设备，包括键盘鼠标
 
 	printf("Initializing Hareware, Stage 3\n");
 	

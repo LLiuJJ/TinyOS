@@ -30,7 +30,7 @@ uint32_t InterruptHandler::HandleInterrupt(uint32_t esp)
 InterruptManager::GateDescriptor InterruptManager::interruptDescriptorTable[256];
 
 InterruptManager* InterruptManager::ActiveInterruptManager = 0;
-
+// 设置IDT，包括了handler函数的位置
 void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     uint16_t CodeSegment, void (*handler)(), uint8_t DescriptorPrivilegeLevel, uint8_t DescriptorType)
 {
@@ -44,7 +44,7 @@ void InterruptManager::SetInterruptDescriptorTableEntry(uint8_t interrupt,
     interruptDescriptorTable[interrupt].reserved = 0;
 }
 
-
+// 初始化中断向量
 InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescriptorTable* globalDescriptorTable, TaskManager* taskManager)
     : programmableInterruptControllerMasterCommandPort(0x20),
       programmableInterruptControllerMasterDataPort(0x21),
@@ -56,14 +56,14 @@ InterruptManager::InterruptManager(uint16_t hardwareInterruptOffset, GlobalDescr
     uint32_t CodeSegment = globalDescriptorTable->CodeSegmentSelector();
 
     const uint8_t IDT_INTERRUPT_GATE = 0xE;
-    for(uint8_t i = 255; i > 0; --i)
+    for(uint8_t i = 255; i > 0; --i) // 将所有初始化为不存在中断
     {
         SetInterruptDescriptorTableEntry(i, CodeSegment, &InterruptIgnore, 0, IDT_INTERRUPT_GATE);
         handlers[i] = 0;
     }
     SetInterruptDescriptorTableEntry(0, CodeSegment, &InterruptIgnore, 0, IDT_INTERRUPT_GATE);
     handlers[0] = 0;
-
+    // 初始化我们使用的中断
     SetInterruptDescriptorTableEntry(0x00, CodeSegment, &HandleException0x00, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(0x01, CodeSegment, &HandleException0x01, 0, IDT_INTERRUPT_GATE);
     SetInterruptDescriptorTableEntry(0x02, CodeSegment, &HandleException0x02, 0, IDT_INTERRUPT_GATE);
@@ -136,7 +136,7 @@ uint16_t InterruptManager::HardwareInterruptOffset()
 {
     return hardwareInterruptOffset;
 }
-
+//中断启用
 void InterruptManager::Activate()
 {
     if(ActiveInterruptManager != 0)
@@ -145,7 +145,7 @@ void InterruptManager::Activate()
     ActiveInterruptManager = this;
     asm("sti");
 }
-
+//中断关闭
 void InterruptManager::Deactivate()
 {
     if(ActiveInterruptManager == this)
@@ -154,14 +154,14 @@ void InterruptManager::Deactivate()
         asm("cli");
     }
 }
-
+// 返回堆栈指针 或执行
 uint32_t InterruptManager::HandleInterrupt(uint8_t interrupt, uint32_t esp)
 {
     if(ActiveInterruptManager != 0)
         return ActiveInterruptManager->DoHandleInterrupt(interrupt, esp);
     return esp;
 }
-
+// 中断执行
 uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
 {
     if(handlers[interrupt] != 0)
@@ -173,11 +173,11 @@ uint32_t InterruptManager::DoHandleInterrupt(uint8_t interrupt, uint32_t esp)
         printf("UNHANDLED INTERRUPT 0x");
         printfHex(interrupt);
     }
-
+    //多任务
     if(interrupt == hardwareInterruptOffset){
         esp = (uint32_t)(taskManager->Schedule((CPUState*)esp));
     }
-
+    // 判断是否在中断中，已有中断请求就这些
     if(hardwareInterruptOffset <= interrupt && interrupt < hardwareInterruptOffset+16)
     {
         programmableInterruptControllerMasterCommandPort.Write(0x20);
