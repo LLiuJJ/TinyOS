@@ -31,7 +31,7 @@ void InternetProtocolHandler::Send(uint32_t dstIP_BE, uint8_t* internetprotocolP
 
 
      
-
+// 初始化
 InternetProtocolProvider::InternetProtocolProvider(EtherFrameProvider* backend, 
                                                    AddressResolutionProtocol* arp,
                                                    uint32_t gatewayIP, uint32_t subnetMask)
@@ -47,7 +47,7 @@ InternetProtocolProvider::InternetProtocolProvider(EtherFrameProvider* backend,
 InternetProtocolProvider::~InternetProtocolProvider()
 {
 }
-            
+// 收到以太帧没
 bool InternetProtocolProvider::OnEtherFrameReceived(uint8_t* etherframePayload, uint32_t size)
 {
     if(size < sizeof(InternetProtocolV4Message))
@@ -81,7 +81,7 @@ bool InternetProtocolProvider::OnEtherFrameReceived(uint8_t* etherframePayload, 
     return sendBack;
 }
 
-
+// ipv4
 void InternetProtocolProvider::Send(uint32_t dstIP_BE, uint8_t protocol, uint8_t* data, uint32_t size)
 {
     uint8_t* buffer = (uint8_t*)MemoryManager::activeMemoryManager->malloc(sizeof(InternetProtocolV4Message) + size);
@@ -103,11 +103,11 @@ void InternetProtocolProvider::Send(uint32_t dstIP_BE, uint8_t protocol, uint8_t
     
     message->checksum = 0;
     message->checksum = Checksum((uint16_t*)message, sizeof(InternetProtocolV4Message));
-    
+    // 数据复制
     uint8_t* databuffer = buffer + sizeof(InternetProtocolV4Message);
     for(int i = 0; i < size; i++)
         databuffer[i] = data[i];
-    
+    //目标地址和源地址不在一个网关下，发给网关
     uint32_t route = dstIP_BE;
     if((dstIP_BE & subnetMask) != (message->srcIP & subnetMask))
         route = gatewayIP;
@@ -116,7 +116,7 @@ void InternetProtocolProvider::Send(uint32_t dstIP_BE, uint8_t protocol, uint8_t
     
     MemoryManager::activeMemoryManager->free(buffer);
 }
-
+// 校验和
 uint16_t InternetProtocolProvider::Checksum(uint16_t* data, uint32_t lengthInBytes)
 {
     uint32_t temp = 0;

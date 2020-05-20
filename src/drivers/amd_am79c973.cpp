@@ -76,7 +76,7 @@ amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor* dev,
     initBlock.physicalAddress = MAC;
     initBlock.reserved3 = 0;
     initBlock.logicalAddress = 0;
-
+    // 收发地址
     sendBufferDescr = (BufferDescriptor*)((((uint32_t)&sendBufferDescrMemory[0]) + 15) & ~((uint32_t)0xF));
     initBlock.sendBufferDescrAddress = (uint32_t)sendBufferDescr;
     recvBufferDescr = (BufferDescriptor*)((((uint32_t)&recvBufferDescrMemory[0]) + 15) & ~((uint32_t)0xF));
@@ -96,7 +96,7 @@ amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor* dev,
         recvBufferDescr[i].flags2 = 0;
         sendBufferDescr[i].avail = 0;
     }
-
+    
     registerAddressPort.Write(1);
     registerDataPort.Write(  (uint32_t)(&initBlock) & 0xFFFF );
     registerAddressPort.Write(2);

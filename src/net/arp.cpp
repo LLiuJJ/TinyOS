@@ -16,7 +16,7 @@ AddressResolutionProtocol::~AddressResolutionProtocol()
 {
 }
 
-
+// 回应还是更新映射表
 bool AddressResolutionProtocol::OnEtherFrameReceived(uint8_t* etherframePayload, uint32_t size)
 {
     if(size < sizeof(AddressResolutionProtocolMessage))
@@ -25,7 +25,7 @@ bool AddressResolutionProtocol::OnEtherFrameReceived(uint8_t* etherframePayload,
     AddressResolutionProtocolMessage* arp = (AddressResolutionProtocolMessage*)etherframePayload;
     if(arp->hardwareType == 0x0100){
         
-        if(arp->protocol == 0x0008
+        if(arp->protocol == 0x0008 // ipv4
         && arp->hardwareAddressSize == 6
         && arp->protocolAddressSize == 4
         && arp->dstIP == backend->GetIPAddress()){
@@ -33,16 +33,16 @@ bool AddressResolutionProtocol::OnEtherFrameReceived(uint8_t* etherframePayload,
             switch(arp->command)
             {
                 
-                case 0x0100: // request
+                case 0x0100: // request 回应要求告诉ip mac
                     arp->command = 0x0200;
-                    arp->dstIP = arp->srcIP;
+                    arp->dstIP = arp->srcIP; // 转换地址返回去
                     arp->dstMAC = arp->srcMAC;
                     arp->srcIP = backend->GetIPAddress();
                     arp->srcMAC = backend->GetMACAddress();
                     return true;
                     break;
                     
-                case 0x0200: // response
+                case 0x0200: // response 在表中建立映射
                     if(numCacheEntries < 128){
                         IPcache[numCacheEntries] = arp->srcIP;
                         MACcache[numCacheEntries] = arp->srcMAC;
@@ -57,7 +57,7 @@ bool AddressResolutionProtocol::OnEtherFrameReceived(uint8_t* etherframePayload,
     return false;
 }
 
-
+// 广播mac地址
 void AddressResolutionProtocol::BroadcastMACAddress(uint32_t IP_BE)
 {
     AddressResolutionProtocolMessage arp;
@@ -76,7 +76,7 @@ void AddressResolutionProtocol::BroadcastMACAddress(uint32_t IP_BE)
 
 }
 
-
+// 这个ip的mac地址
 void AddressResolutionProtocol::RequestMACAddress(uint32_t IP_BE)
 {
     
@@ -89,13 +89,13 @@ void AddressResolutionProtocol::RequestMACAddress(uint32_t IP_BE)
     
     arp.srcMAC = backend->GetMACAddress();
     arp.srcIP = backend->GetIPAddress();
-    arp.dstMAC = 0xFFFFFFFFFFFF; // broadcast
+    arp.dstMAC = 0xFFFFFFFFFFFF; // broadcast 广播地址
     arp.dstIP = IP_BE;
     
     this->Send(arp.dstMAC, (uint8_t*)&arp, sizeof(AddressResolutionProtocolMessage));
 
 }
-
+// 根据IP映射获取MAC地址
 uint64_t AddressResolutionProtocol::GetMACFromCache(uint32_t IP_BE)
 {
     for(int i = 0; i < numCacheEntries; i++)
@@ -103,7 +103,7 @@ uint64_t AddressResolutionProtocol::GetMACFromCache(uint32_t IP_BE)
             return MACcache[i];
     return 0xFFFFFFFFFFFF; // broadcast address
 }
-
+// 
 uint64_t AddressResolutionProtocol::Resolve(uint32_t IP_BE)
 {
     uint64_t result = GetMACFromCache(IP_BE);

@@ -28,7 +28,7 @@ namespace tinyos
             // LAST_ACK,
         };
 
-        enum TransmissionControlProtocolFlag
+        enum TransmissionControlProtocolFlag //这里就是保证后面取或操作
         {
             FIN = 1,
             SYN = 2,
@@ -58,7 +58,7 @@ namespace tinyos
 
             common::uint32_t options;
         }__attribute((packed));
-
+        // 伪首部，仅用于校验和
         struct TransmissionControlProtocolPseudoHeader
         {
             common::uint32_t srcIP;
