@@ -12,20 +12,20 @@ namespace tinyos
         
         struct InternetProtocolV4Message
         {
-            common::uint8_t headerLength : 4;
-            common::uint8_t version : 4;
-            common::uint8_t tos;
-            common::uint16_t totalLength;
+            common::uint8_t headerLength : 4; //首部长
+            common::uint8_t version : 4; //版本
+            common::uint8_t tos; //服务类型
+            common::uint16_t totalLength; //总长度
             
-            common::uint16_t ident;
-            common::uint16_t flagsAndOffset;
+            common::uint16_t ident;//标识符
+            common::uint16_t flagsAndOffset;//片偏移
             
-            common::uint8_t timeToLive;
-            common::uint8_t protocol;
-            common::uint16_t checksum;
+            common::uint8_t timeToLive;//存活时间
+            common::uint8_t protocol;//协议
+            common::uint16_t checksum;//校验和
             
-            common::uint32_t srcIP;
-            common::uint32_t dstIP;
+            common::uint32_t srcIP;//源地址
+            common::uint32_t dstIP;//目的地址
         } __attribute__((packed));
         
         class InternetProtocolProvider;
@@ -52,8 +52,8 @@ namespace tinyos
         protected:
             InternetProtocolHandler* handlers[255];
             AddressResolutionProtocol* arp;
-            common::uint32_t gatewayIP;
-            common::uint32_t subnetMask;
+            common::uint32_t gatewayIP; //网关ip
+            common::uint32_t subnetMask; //子网掩码
             
         public:
             InternetProtocolProvider(EtherFrameProvider* backend, 

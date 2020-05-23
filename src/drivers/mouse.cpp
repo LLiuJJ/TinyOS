@@ -64,9 +64,9 @@ uint32_t MouseDriver::HandleInterrupt(uint32_t esp)
     }
 
     buffer[offset] = dataport.Read();
-    offset = (offset + 1) % 3;
+    offset = (offset + 1) % 3;  //逐渐读值，确保读对
 
-    if(offset == 0){
+    if(offset == 0){ //
         if(buffer[1] != 0 || buffer[2] != 0){
             handler->OnMouseMove((int8_t)buffer[1], ((int8_t)buffer[2])); //有时候会存在鼠标移动反向，可以通过在buffer2前加-或不加来调
         }

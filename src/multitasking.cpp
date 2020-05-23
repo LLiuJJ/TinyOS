@@ -37,9 +37,7 @@ Task::~Task()
 
 }
 
-        Task *tasks[256];
-        int numTask;
-        int currentTask;
+
 TaskManager::TaskManager()
 {
     numTask = 0;
@@ -67,7 +65,7 @@ CPUState* TaskManager::Schedule(CPUState* cpustate)
 
     if(currentTask >= 0)
         tasks[currentTask]->cpustate = cpustate;
-
+    //有多个任务，上个任务处理后直接换
     if(++currentTask >= numTask)
         currentTask %= numTask;
     return tasks[currentTask]->cpustate;

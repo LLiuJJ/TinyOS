@@ -7,7 +7,7 @@ using namespace tinyos::common;
 
     
 MemoryManager *MemoryManager::activeMemoryManager = 0;
-        
+//初始化，就是最开始定义的多大就是多大只有一个节点
 MemoryManager::MemoryManager(size_t start, size_t size)
 {
     activeMemoryManager = this;
@@ -28,7 +28,7 @@ MemoryManager::~MemoryManager()
     if(activeMemoryManager == this)
         activeMemoryManager = 0;
 }
-
+// 申请新空间
 void* MemoryManager::malloc(size_t size)
 {
     MemoryChunk *result = 0;
@@ -44,8 +44,8 @@ void* MemoryManager::malloc(size_t size)
 
     // 分配大于需求时，将他多余的分配下去
     if(result->size >= size + sizeof(MemoryChunk) + 1){
-        MemoryChunk *temp = (MemoryChunk*)((size_t)result + sizeof(MemoryChunk) + size);
-
+        MemoryChunk *temp = (MemoryChunk*)((size_t)result + sizeof(MemoryChunk) + size); //申请的空间之后地址
+        // 将之后的内存地址重新分配
         temp->allocated = false;
         temp->size = result->size - size - sizeof(MemoryChunk);
         temp->prev = result;
@@ -104,7 +104,7 @@ void *operator new[](unsigned size)
     return tinyos::MemoryManager::activeMemoryManager->malloc(size);
 
 }
-
+// 显式调用
 void *operator new(unsigned size, void *ptr)
 {
     return ptr;    

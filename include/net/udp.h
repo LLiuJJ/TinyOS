@@ -26,7 +26,7 @@ namespace tinyos
         public:
             UserDatagramProtocolHandler();
             ~UserDatagramProtocolHandler();
-            virtual void HandlerUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size);
+            virtual void HandleUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size);
         };
 
         class UserDatagramProtocolSocket
@@ -43,7 +43,7 @@ namespace tinyos
         public:
             UserDatagramProtocolSocket(UserDatagramProtocolProvider* backend);
             ~UserDatagramProtocolSocket();
-            virtual void HandlerUserDatagramProtocolMessage(common::uint8_t* data, common::uint16_t size);
+            virtual void HandleUserDatagramProtocolMessage(common::uint8_t* data, common::uint16_t size);
             virtual void Send(common::uint8_t* data, common::uint16_t size);
             virtual void Disconnect();
         };

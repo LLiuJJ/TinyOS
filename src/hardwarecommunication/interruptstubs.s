@@ -64,7 +64,7 @@ HandleInterruptRequest 0x31
 HandleInterruptRequest 0x80
 
 
-
+# 中断处理 处理前压栈保存，处理后出栈还原
 int_bottom:
 
     # save register 
@@ -92,7 +92,7 @@ int_bottom:
     # C++ Handler aufrufen
     pushl %esp
     push (interruptnumber)
-    call _ZN6tinyos21hardwarecommunication16InterruptManager15HandleInterruptEhj
+    call _ZN6tinyos21hardwarecommunication16InterruptManager15HandleInterruptEhj  #启用特定HandleInterrupt
     #add %esp, 6
     mov %eax, %esp # switch the stack 
 

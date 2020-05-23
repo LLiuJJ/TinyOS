@@ -18,7 +18,7 @@ InternetControlMessageProtocol::~InternetControlMessageProtocol()
 
 void printf(char*);
 void printfHex(uint8_t);
-
+// 收到数据后响应
 bool InternetControlMessageProtocol::OnInternetProtocolReceived(common::uint32_t srcIP_BE, common::uint32_t dstIP_BE,
                                             common::uint8_t* internetprotocolPayload, common::uint32_t size)
 {
@@ -48,7 +48,7 @@ bool InternetControlMessageProtocol::OnInternetProtocolReceived(common::uint32_t
 
     return false;
 }
-
+// ping
 void InternetControlMessageProtocol::RequestEchoReply(uint32_t ip_be)
 {
     InternetControlMessageProtocolMessage icmp;

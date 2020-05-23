@@ -30,10 +30,10 @@ namespace tinyos
             ~Widget();
 
             virtual void GetFocus(Widget* widget);
-            virtual void ModeToScreen(common::int32_t &x, common::int32_t &y);
-            virtual bool ContainsCoordinate(common::int32_t x, common::int32_t y);
+            virtual void ModeToScreen(common::int32_t &x, common::int32_t &y); // 获取当前鼠标位置
+            virtual bool ContainsCoordinate(common::int32_t x, common::int32_t y);//鼠标移动判断出界
 
-            virtual void Draw(tinyos::common::GraphicsContext* gc);
+            virtual void Draw(tinyos::common::GraphicsContext* gc);//画桌面
             virtual void OnMouseDown(common::int32_t x, common::int32_t y, common::uint8_t button);
             virtual void OnMouseUp(common::int32_t x, common::int32_t y, common::uint8_t button);
             virtual void OnMouseMove(common::int32_t oldx, common::int32_t oldy, common::int32_t newx, common::int32_t newy);

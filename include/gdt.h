@@ -15,7 +15,7 @@ namespace tinyos
 			tinyos::common::uint16_t base_lo;  //point低字节
 			tinyos::common::uint8_t base_hi; //excess pipes
 			tinyos::common::uint8_t type;  //
-			tinyos::common::uint8_t flags_limit_hi; //
+			tinyos::common::uint8_t flags_limit_hi; //这里包含了两个limit和flag
 			tinyos::common::uint8_t base_vhi;  //
 		public:
 			SegmentDescriptor(tinyos::common::uint32_t base, tinyos::common::uint32_t limit, tinyos::common::uint8_t type);

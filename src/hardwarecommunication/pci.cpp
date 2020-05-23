@@ -32,7 +32,7 @@ PeripheralComponentInterconnectController::~PeripheralComponentInterconnectContr
 
 uint32_t PeripheralComponentInterconnectController::Read(uint16_t bus, uint16_t device, uint16_t function, uint32_t registeroffset)
 {
-    // 
+    // 通过这四个值构建标识符传给PCI Controller
     uint32_t id = 
         0x1 << 31
         | ((bus & 0xFF) << 16)
@@ -40,6 +40,7 @@ uint32_t PeripheralComponentInterconnectController::Read(uint16_t bus, uint16_t 
         | ((function & 0x07) << 8)
         | (registeroffset & 0xFC); 
     commandPort.Write(id);
+    //读值
     uint32_t result = dataPort.Read();
     return result >> (8 * (registeroffset % 4));
 }
@@ -63,7 +64,7 @@ bool PeripheralComponentInterconnectController::DeviceHasFunctions(uint16_t bus,
 
 void printf(char* str);
 void printfHex(uint8_t);
-
+// 查看8buses和32devices下的函数，主要是将设备添加到driverManager中
 void PeripheralComponentInterconnectController::SelectDrivers(tinyos::drivers::DriverManager * driverManager, tinyos::hardwarecommunication::InterruptManager*  interrupts)
 {
     for(int bus = 0; bus < 8; bus++){
@@ -140,7 +141,7 @@ BaseAddressRegister PeripheralComponentInterconnectController::GetBaseAddressReg
     return result;
 }
 
-
+// 获取driver，这里我们主要就是AMD的网卡
 Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponentInterconnectDeviceDescriptor dev, InterruptManager*  interrupts)
 {
     Driver* driver = 0;
@@ -178,7 +179,7 @@ Driver* PeripheralComponentInterconnectController::GetDriver(PeripheralComponent
 
     return driver;
 }
-
+// 获取device的各项信息
 PeripheralComponentInterconnectDeviceDescriptor PeripheralComponentInterconnectController::GetDeviceDescriptor(uint16_t bus, uint16_t device, uint16_t function)
 {
     PeripheralComponentInterconnectDeviceDescriptor result;

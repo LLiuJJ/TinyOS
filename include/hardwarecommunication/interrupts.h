@@ -13,7 +13,7 @@ namespace tinyos
     {
         class InterruptManager;
 
-        class InterruptHandler
+        class InterruptHandler //中断处理
         {
         protected:
             tinyos::common::uint8_t InterruptNumber;
@@ -99,7 +99,7 @@ namespace tinyos
                 static void HandleException0x11();
                 static void HandleException0x12();
                 static void HandleException0x13();
-
+                
                 static tinyos::common::uint32_t HandleInterrupt(tinyos::common::uint8_t interrupt, tinyos::common::uint32_t esp);
                 tinyos::common::uint32_t DoHandleInterrupt(tinyos::common::uint8_t interrupt, tinyos::common::uint32_t esp);
 

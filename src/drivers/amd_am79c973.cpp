@@ -44,7 +44,7 @@ amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor* dev,
     this->handler = 0;
     currentSendBuffer = 0;
     currentRecvBuffer = 0;
-
+    // 获取MAC地址
     uint64_t MAC0 = MACAddress0Port.Read() % 256;
     uint64_t MAC1 = MACAddress0Port.Read() / 256;
     uint64_t MAC2 = MACAddress2Port.Read() % 256;
@@ -76,12 +76,12 @@ amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor* dev,
     initBlock.physicalAddress = MAC;
     initBlock.reserved3 = 0;
     initBlock.logicalAddress = 0;
-
+    // 收发地址
     sendBufferDescr = (BufferDescriptor*)((((uint32_t)&sendBufferDescrMemory[0]) + 15) & ~((uint32_t)0xF));
     initBlock.sendBufferDescrAddress = (uint32_t)sendBufferDescr;
     recvBufferDescr = (BufferDescriptor*)((((uint32_t)&recvBufferDescrMemory[0]) + 15) & ~((uint32_t)0xF));
     initBlock.recvBufferDescrAddress = (uint32_t)recvBufferDescr;
-
+    //初始化
     for(uint8_t i = 0; i < 8; i++)
     {
         sendBufferDescr[i].address = (((uint32_t)&sendBuffers[i]) + 15 ) & ~(uint32_t)0xF;
@@ -96,7 +96,7 @@ amd_am79c973::amd_am79c973(PeripheralComponentInterconnectDeviceDescriptor* dev,
         recvBufferDescr[i].flags2 = 0;
         sendBufferDescr[i].avail = 0;
     }
-
+    
     registerAddressPort.Write(1);
     registerDataPort.Write(  (uint32_t)(&initBlock) & 0xFFFF );
     registerAddressPort.Write(2);
@@ -160,12 +160,12 @@ uint32_t amd_am79c973::HandleInterrupt(common::uint32_t esp)
 void amd_am79c973::Send(uint8_t* buffer, int size)
 {
     int sendDescriptor = currentSendBuffer;
-    currentSendBuffer = (currentSendBuffer + 1) % 8;
+    currentSendBuffer = (currentSendBuffer + 1) % 8; // 前面定义了八个，所以循环
 
     if(size > 1518)
         size = 1518;
 
-
+    // 将数据从发送数组复制到sendbufferdescr中
     for(uint8_t* src = buffer + size - 1,
          *dst = (uint8_t*)(sendBufferDescr[sendDescriptor].address + size - 1);
          src >= buffer; src--, dst--){
@@ -190,7 +190,7 @@ void amd_am79c973::Send(uint8_t* buffer, int size)
 void amd_am79c973::Receive()
 {
     printf("\nRECE: ");
-
+    // 直接读，判断flag满足条件不
     for(; (recvBufferDescr[currentRecvBuffer].flags & 0x80000000) == 0; 
         currentRecvBuffer = (currentRecvBuffer + 1) % 8){
         if(!(recvBufferDescr[currentRecvBuffer].flags & 0x40000000)

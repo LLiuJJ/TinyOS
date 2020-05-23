@@ -54,13 +54,22 @@ void printf(char *str) //printf函数，在屏幕输出字符串，通过屏幕�
 			y++;
 			x = 0;
 		}
-		if(y >= 25){ //超过屏幕，清屏
-			for(y = 0; y < 25; y++)
-				for(x = 0; x < 80; x++) // | ‘  ’ 清屏
-					VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | ' ';
+		if(y >= 25){//超过屏幕，内容上移，强迫症清屏看不见了
+			for(y = 0; y < 24; y++)
+				for(x = 0; x < 80; x++)
+					VideoMemory[80*y+x] = VideoMemory[80*(y+1)+x];
+			for(x = 0; x < 80; x++)
+				VideoMemory[80*24+x] = (VideoMemory[80*24+x] & 0xFF00) | ' ';
+			y = 24;
 			x = 0;
-			y = 0;
 		}
+		// if(y >= 25){ //超过屏幕，清屏
+		// 	for(y = 0; y < 25; y++)
+		// 		for(x = 0; x < 80; x++) // | ‘  ’ 清屏
+		// 			VideoMemory[80*y+x] = (VideoMemory[80*y+x] & 0xFF00) | ' ';
+		// 	x = 0;
+		// 	y = 0;
+		// }
 	}
 }
 
@@ -137,7 +146,7 @@ public:
 class PrintfUDPHandler : public UserDatagramProtocolHandler
 {
 public:
-	void HandlerUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
+	void HandleUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
 	{
 		char *foo = " ";
 		for(int i = 0; i < size; i++){
@@ -212,7 +221,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 
 	GlobalDescriptorTable gdt;
     
-	uint32_t* menupper = (uint32_t*)(((size_t)multiboot_structure) + 8);
+	uint32_t* menupper = (uint32_t*)(((size_t)multiboot_structure) + 8); // 8字节用于引导
 	size_t heap = 10 * 1024  * 1024;
 	MemoryManager memoryManager(heap, (*menupper) * 1024 - heap - 10*1024);
 
@@ -270,7 +279,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 
 
 	printf("Initializing Hareware, Stage 2\n");
-		drvManager.ActivateAll();
+	drvManager.ActivateAll();  //启动所有设备，包括键盘鼠标
 
 	printf("Initializing Hareware, Stage 3\n");
 	
@@ -295,10 +304,10 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
     MSDOSPartitionTable::ReadPartitions(&ata0s);
 
 	char* atabuffer = "https://LearnBycoding.cn";
-	// ata0s.Write28(0, (uint8_t*)atabuffer, 21);
+	// ata0s.Write28(0, (uint8_t*)atabuffer, 25);
 	// ata0s.Flush();
 
-	// ata0s.Read28(0, (uint8_t*)atabuffer, 21);
+	// ata0s.Read28(0, (uint8_t*)atabuffer, 25);
 
 	// interrupt 15
 	AdvancedTechnologyAttachment ata1m(0x170, true);
@@ -309,7 +318,7 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 
 	// amd_am79c973* eth0 = (amd_am79c973*)(drvManager.drivers[2]);
 	
-	// uint8_t ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;
+	// uint8_t ip1 = 10, ip2 = 0, ip3 = 2, ip4 = 15;// vritualbox提供的ip
 	// uint32_t ip_be = ((uint32_t)ip4 << 24)
 	// 				|((uint32_t)ip3 << 16)
 	// 				|((uint32_t)ip2 << 8)
@@ -319,13 +328,13 @@ extern "C" void kernelMain(const void* multiboot_structure,  uint32_t /*multiboo
 	// EtherFrameProvider etherframe(eth0);
 	// AddressResolutionProtocol arp(&etherframe);
 
-	// uint8_t gip1 = 10, gip2 = 0, gip3 = 2, gip4 = 2;
+	// uint8_t gip1 = 10, gip2 = 0, gip3 = 2, gip4 = 2; // virtualbox默认的网关地址
 	// uint32_t gip_be = ((uint32_t)gip4 << 24)
 	// 				|((uint32_t)gip3 << 16)
 	// 				|((uint32_t)gip2 << 8)
 	// 				|(uint32_t)gip1;
 
-	// uint8_t subnet1 = 255, subnet2 = 255, subnet3 = 255, subnet4 = 0;
+	// uint8_t subnet1 = 255, subnet2 = 255, subnet3 = 255, subnet4 = 0;//子网掩码
 	// uint32_t subnet_be = ((uint32_t)subnet4 << 24)
 	// 				|((uint32_t)subnet3 << 16)
 	// 				|((uint32_t)subnet2 << 8)

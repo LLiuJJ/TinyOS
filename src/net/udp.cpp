@@ -16,7 +16,7 @@ UserDatagramProtocolHandler::~UserDatagramProtocolHandler()
 
 }
 
-void UserDatagramProtocolHandler::HandlerUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
+void UserDatagramProtocolHandler::HandleUserDatagramProtocolMessage(UserDatagramProtocolSocket* socket, common::uint8_t* data, common::uint16_t size)
 {
 
 }
@@ -32,13 +32,13 @@ UserDatagramProtocolSocket::~UserDatagramProtocolSocket()
 {
 
 }
-
-void UserDatagramProtocolSocket::HandlerUserDatagramProtocolMessage(uint8_t* data, uint16_t size)
+// 
+void UserDatagramProtocolSocket::HandleUserDatagramProtocolMessage(uint8_t* data, uint16_t size)
 {
     if(handler != 0)
-        handler->HandlerUserDatagramProtocolMessage(this, data, size);
+        handler->HandleUserDatagramProtocolMessage(this, data, size);
 }
-
+// 
 void UserDatagramProtocolSocket::Send(uint8_t* data, uint16_t size)
 {
     backend->Send(this, data, size);
@@ -56,14 +56,14 @@ UserDatagramProtocolProvider::UserDatagramProtocolProvider(InternetProtocolProvi
     for(int i = 0; i < 65535; i++)
         sockets[i] = 0;
     numSockets = 0;
-    freePort = 1024;
+    freePort = 1024; //1024端口开始
 }
 
 UserDatagramProtocolProvider::~UserDatagramProtocolProvider()
 {
 
 }
-
+// 接收消息
 bool UserDatagramProtocolProvider::OnInternetProtocolReceived(uint32_t srcIP_BE, uint32_t dstIP_BE,
                             uint8_t* internetprotocolPayload, uint32_t size)
 {
@@ -78,7 +78,7 @@ bool UserDatagramProtocolProvider::OnInternetProtocolReceived(uint32_t srcIP_BE,
     for(uint16_t i = 0; i < numSockets && socket == 0; i++){
         if(sockets[i]->localPort == msg->dstPort
         && sockets[i]->localIP == dstIP_BE
-        && sockets[i]->listening){
+        && sockets[i]->listening){ // 监听信息
             socket = sockets[i];
             socket->listening = false;
             socket->remotePort = msg->srcPort;
@@ -93,12 +93,12 @@ bool UserDatagramProtocolProvider::OnInternetProtocolReceived(uint32_t srcIP_BE,
     }
 
     if(socket != 0)
-        socket->HandlerUserDatagramProtocolMessage(internetprotocolPayload + sizeof(UserDatagramProtocolHeader),
+        socket->HandleUserDatagramProtocolMessage(internetprotocolPayload + sizeof(UserDatagramProtocolHeader),
                                 size - sizeof(UserDatagramProtocolHeader));
 
     return false;
 }
-
+// 连接ip和端口
 UserDatagramProtocolSocket* UserDatagramProtocolProvider::Connect(uint32_t ip, uint16_t port)
 {
     UserDatagramProtocolSocket* socket = (UserDatagramProtocolSocket*)MemoryManager::activeMemoryManager->malloc(sizeof(UserDatagramProtocolSocket));
@@ -118,11 +118,11 @@ UserDatagramProtocolSocket* UserDatagramProtocolProvider::Connect(uint32_t ip, u
 
     return socket;
 }
-
+// 监听特定端口
 UserDatagramProtocolSocket* UserDatagramProtocolProvider::Listen(uint16_t port)
 {
     UserDatagramProtocolSocket* socket = (UserDatagramProtocolSocket*)MemoryManager::activeMemoryManager->malloc(sizeof(UserDatagramProtocolSocket));
-    if(socket != 0){
+    if(socket != 0){ //申请到空间
         new (socket) UserDatagramProtocolSocket(this);
 
         socket->listening = true;
@@ -136,7 +136,7 @@ UserDatagramProtocolSocket* UserDatagramProtocolProvider::Listen(uint16_t port)
 
     return socket;
 }
-
+// 断开连接
 void UserDatagramProtocolProvider::Disconnect(UserDatagramProtocolSocket* socket)
 {
     for(uint16_t i = 0; i < numSockets && socket == 0; i++)
@@ -147,7 +147,7 @@ void UserDatagramProtocolProvider::Disconnect(UserDatagramProtocolSocket* socket
         }
 
 }
-
+// 数据发送
 void UserDatagramProtocolProvider::Send(UserDatagramProtocolSocket* socket, uint8_t* data, common::uint16_t size)
 {
     uint16_t totalLength = size + sizeof(UserDatagramProtocolHeader);
@@ -168,7 +168,7 @@ void UserDatagramProtocolProvider::Send(UserDatagramProtocolSocket* socket, uint
 
     MemoryManager::activeMemoryManager->free(buffer);
 }
-
+// 捆绑
 void UserDatagramProtocolProvider::Bind(UserDatagramProtocolSocket* socket, UserDatagramProtocolHandler* handler)
 {
     socket->handler = handler;

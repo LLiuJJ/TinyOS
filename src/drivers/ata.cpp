@@ -20,7 +20,7 @@ AdvancedTechnologyAttachment::AdvancedTechnologyAttachment(common::uint16_t port
     commandPort(portBase + 7),
     controlPort(portBase + 0x206)
 {
-    btyesPerSector = 512;
+    btyesPerSector = 512; // 定义一块就是512
     this->master = master;
 }
 
@@ -49,7 +49,7 @@ void AdvancedTechnologyAttachment::Identify()
     status = commandPort.Read();
     if(status == 0x00)
         return; // no device
-    
+    // 等设备准备好
     while(((status & 0x80) == 0x80)
             && ((status & 0x01) != 0x01))
         status = commandPort.Read();
@@ -77,7 +77,7 @@ void AdvancedTechnologyAttachment::Read28(common::uint32_t sector, common::uint8
     devicePort.Write((master ? 0xE0 : 0xF0) | ((sector & 0x0F000000) >> 24));
     errorPort.Write(0);
     sectorCountPort.Write(1);
-
+    // lba是8位
     lbaLowPort.Write( sector & 0x000000FF );
     lbaMidPort.Write((sector & 0x0000FF00) >> 8);
     lbaHiPort.Write( (sector & 0x00FF0000) >> 16);
@@ -94,7 +94,7 @@ void AdvancedTechnologyAttachment::Read28(common::uint32_t sector, common::uint8
     }
 
     printf("Reading from ATA: ");
-
+    // 一次加两个因为dataport是一次读16位，所以对位操作就可以将数据正确读出
     for(uint16_t i = 0; i < count; i+= 2){
         uint16_t wdata = dataPort.Read();
         
@@ -107,7 +107,7 @@ void AdvancedTechnologyAttachment::Read28(common::uint32_t sector, common::uint8
         if(i+1 < count)
             data[i+1] = (wdata >> 8) & 0x00FF;
     }
-
+    // 不够的补空
     for(uint16_t i = count + (count % 2); i < btyesPerSector; i+= 2){
         dataPort.Read();
     }
@@ -129,7 +129,7 @@ void AdvancedTechnologyAttachment::Write28(common::uint32_t sector, common::uint
     commandPort.Write(0x30);
 
     printf("Writing to ATA: ");
-
+    // 开始写入数据
     for(uint16_t i = 0; i < count; i+= 2){
         uint16_t wdata = data[i];
         if(i+1 < count)
@@ -142,7 +142,7 @@ void AdvancedTechnologyAttachment::Write28(common::uint32_t sector, common::uint
 
         dataPort.Write(wdata);
     }
-
+    // 写入少于的，后面补0
     for(uint16_t i = count + (count % 2); i < btyesPerSector; i+= 2){
         dataPort.Write(0x0000);
     }
