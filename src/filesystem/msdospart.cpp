@@ -16,7 +16,7 @@ void MSDOSPartitionTable::ReadPartitions(AdvancedTechnologyAttachment *hd)
     MasterBootRecord mbr;
 
     printf("MBR: ");
-
+    // 读取磁盘
     hd->Read28(0, (uint8_t*)&mbr, sizeof(MasterBootRecord));
     
     // for(int i = 0x1BE; i <= 0X01FF; i++){
@@ -29,7 +29,7 @@ void MSDOSPartitionTable::ReadPartitions(AdvancedTechnologyAttachment *hd)
         printf("illegal MBR");
         return;
     }
-
+    // 分别查看四个分区
     for(int i = 0; i < 4; i++){
         if(mbr.primaryPartition[i].partition_id == 0x00)
             continue;

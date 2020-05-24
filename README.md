@@ -28,10 +28,10 @@ TinyOS 是一些简版的 OS 实现，下面列出的是主要要实现的功能
 - 24	[Network: Internet Control Message Protocol (ICMP)](./doc/23/23.md)
 - 25	Network: User Datagram Protocol (UDP)
 - 26	Network: Transmission Control Protocol (TCP)
-- 27	Network: Transmission Control Protocol (TCP)
+- 27	[Network: Transmission Control Protocol (TCP)](./doc/24/24.md)
 - 28	Network: TCP and Hyper Text Terminal Protocol (HTTP)
 - 29    Partition Table
-- 30    File Allocation Table(FAT32)
+- 30    [File Allocation Table(FAT32)](./doc/30/30.md)
 -------------------------
 make命令
 - `make clean`  删除已经编译的*.o mykernel.bin mykernel.iso。

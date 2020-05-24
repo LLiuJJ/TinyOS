@@ -28,7 +28,7 @@ AdvancedTechnologyAttachment::~AdvancedTechnologyAttachment()
 {
 
 }
-
+// 确认设备
 void AdvancedTechnologyAttachment::Identify()
 {
     devicePort.Write(master ? 0xA0 : 0xB0);
